@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import { Home, Menu, X, ChevronDown, User } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,158 +12,148 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    setIsDropdownOpen(false);
+  };
+
+  // Navigation items for SEO and structure
+  const navigationItems = [
+    { href: '/tours', label: 'Tours & Activities', description: 'Explore Bohol tours and activities' },
+    { href: '/hotels', label: 'Hotels & Resorts', description: 'Find the best hotels in Bohol' },
+    { href: '/car-rentals', label: 'Car Rentals', description: 'Rent a car for your Bohol trip' },
+    { href: '/destinations', label: 'Destinations', description: 'Popular Bohol destinations' },
+    { href: '/about', label: 'About', description: 'Learn about Bohol Travel Tips' },
+  ];
+
+  const travelGuideItems = [
+    { href: '/travel-guides/best-time-to-visit', label: 'Best Time to Visit Bohol' },
+    { href: '/travel-guides/attractions', label: 'Top Attractions Guide' },
+    { href: '/travel-guides/itinerary', label: 'Sample Itineraries' },
+    { href: '/travel-guides/food', label: 'Food & Dining Guide' },
+    { href: '/travel-guides/transportation', label: 'Transportation Guide' },
+  ];
 
   return (
-    <header className="bg-white shadow-md relative z-50">
-      <nav className="container mx-auto px-4">
+    <header className="bg-white shadow-md sticky top-0 z-50" role="banner">
+      <nav className="container mx-auto px-4" role="navigation" aria-label="Main navigation">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+          {/* Logo - SEO optimized */}
+          <Link 
+            to="/" 
+            className="flex items-center space-x-3 text-decoration-none"
+            aria-label="Bohol Travel Tips - Home"
+          >
+            <div className="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl">
               B
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Guide to Bohol</h1>
-              <p className="text-xs text-gray-500">and Beyond</p>
+              <h1 className="text-xl font-bold text-gray-900 m-0">Bohol Travel Tips</h1>
+              <p className="text-xs text-gray-500 m-0">Ultimate Bohol Guide</p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <Link
-              to="/tours"
-              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
-                isActive('/tours') ? 'text-blue-600' : ''
-              }`}
-            >
-              Tours & Activities
-            </Link>
-            <Link
-              to="/hotels"
-              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
-                isActive('/hotels') ? 'text-blue-600' : ''
-              }`}
-            >
-              Hotels & Resorts
-            </Link>
-            <Link
-              to="/car-rentals"
-              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
-                isActive('/car-rentals') ? 'text-blue-600' : ''
-              }`}
-            >
-              Car Rentals
-            </Link>
-            <Link
-              to="/destinations"
-              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
-                isActive('/destinations') ? 'text-blue-600' : ''
-              }`}
-            >
-              Destinations
-            </Link>
+          <div className="hidden lg:flex items-center space-x-6" role="menubar">
+            {navigationItems.slice(0, -1).map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                role="menuitem"
+                className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 px-3 py-2 rounded-md ${
+                  isActive(item.href) ? 'text-blue-600 bg-blue-50' : ''
+                }`}
+                title={item.description}
+              >
+                {item.label}
+              </Link>
+            ))}
             
             {/* Travel Guides Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 flex items-center ${
-                  isActive('/travel-guides') ? 'text-blue-600' : ''
+                className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 flex items-center px-3 py-2 rounded-md ${
+                  location.pathname.startsWith('/travel-guides') ? 'text-blue-600 bg-blue-50' : ''
                 }`}
+                aria-expanded={isDropdownOpen}
+                aria-haspopup="true"
+                aria-label="Travel Guides menu"
               >
                 Travel Guides
-                <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`ml-1 w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl py-2">
-                  <Link
-                    to="/travel-guides/best-time-to-visit"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Best Time to Visit Bohol
-                  </Link>
-                  <Link
-                    to="/travel-guides/attractions"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Top Attractions Guide
-                  </Link>
-                  <Link
-                    to="/travel-guides/itinerary"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Sample Itineraries
-                  </Link>
-                  <Link
-                    to="/travel-guides/food"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Food & Dining Guide
-                  </Link>
-                  <Link
-                    to="/travel-guides/transportation"
-                    className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Transportation Guide
-                  </Link>
+                <div 
+                  className="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-xl py-2 z-50"
+                  role="menu"
+                  aria-label="Travel guides submenu"
+                >
+                  {travelGuideItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      role="menuitem"
+                      className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition duration-200"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
 
             <Link
               to="/about"
-              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
-                isActive('/about') ? 'text-blue-600' : ''
+              role="menuitem"
+              className={`text-gray-700 hover:text-blue-600 font-medium transition duration-200 px-3 py-2 rounded-md ${
+                isActive('/about') ? 'text-blue-600 bg-blue-50' : ''
               }`}
+              title="Learn about Bohol Travel Tips"
             >
               About
             </Link>
           </div>
 
-          {/* User Menu / Auth */}
+          {/* User Authentication */}
           <div className="hidden lg:flex items-center space-x-4">
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md transition duration-200"
+                  aria-expanded={isDropdownOpen}
+                  aria-haspopup="true"
+                  aria-label={`User menu for ${user.name}`}
                 >
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-semibold text-sm">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
+                    <User className="w-4 h-4 text-blue-600" />
                   </div>
                   <span className="font-medium">{user.name}</span>
+                  <ChevronDown className="w-4 h-4" />
                 </button>
                 
                 {isDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl py-2">
                     <Link
                       to="/dashboard"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       My Dashboard
                     </Link>
                     <Link
                       to="/bookings"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       My Bookings
                     </Link>
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition duration-200"
                       onClick={() => setIsDropdownOpen(false)}
                     >
                       Profile Settings
@@ -173,7 +164,7 @@ const Header: React.FC = () => {
                         logout();
                         setIsDropdownOpen(false);
                       }}
-                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50"
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition duration-200"
                     >
                       Sign Out
                     </button>
@@ -184,7 +175,7 @@ const Header: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-blue-600 font-medium transition duration-200"
+                  className="text-gray-700 hover:text-blue-600 font-medium transition duration-200 px-3 py-2"
                 >
                   Sign In
                 </Link>
@@ -202,69 +193,57 @@ const Header: React.FC = () => {
           <button
             onClick={toggleMenu}
             className="lg:hidden text-gray-700 hover:text-blue-600 p-2"
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle mobile menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
-            <div className="px-4 py-2 space-y-2">
-              <Link
-                to="/tours"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                Tours & Activities
-              </Link>
-              <Link
-                to="/hotels"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                Hotels & Resorts
-              </Link>
-              <Link
-                to="/car-rentals"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                Car Rentals
-              </Link>
-              <Link
-                to="/destinations"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                Destinations
-              </Link>
-              <Link
-                to="/travel-guides"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                Travel Guides
-              </Link>
-              <Link
-                to="/about"
-                className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
-                onClick={closeMenu}
-              >
-                About
-              </Link>
-              <hr className="my-2" />
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+            <div className="px-4 py-4 space-y-2 max-h-96 overflow-y-auto">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className={`block py-3 px-2 text-gray-700 hover:text-blue-600 font-medium transition duration-200 ${
+                    isActive(item.href) ? 'text-blue-600 bg-blue-50' : ''
+                  }`}
+                  onClick={closeMenu}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              
+              {/* Mobile Travel Guides */}
+              <div className="border-t pt-2 mt-2">
+                <div className="font-medium text-gray-900 py-2 px-2">Travel Guides</div>
+                {travelGuideItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="block py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-200"
+                    onClick={closeMenu}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              
+              <hr className="my-4" />
+              
+              {/* Mobile Authentication */}
               {user ? (
                 <>
                   <Link
                     to="/dashboard"
-                    className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
+                    className="block py-3 px-2 text-gray-700 hover:text-blue-600 font-medium transition duration-200"
                     onClick={closeMenu}
                   >
                     My Dashboard
@@ -274,7 +253,7 @@ const Header: React.FC = () => {
                       logout();
                       closeMenu();
                     }}
-                    className="block w-full text-left py-2 text-gray-700 hover:text-blue-600 font-medium"
+                    className="block w-full text-left py-3 px-2 text-gray-700 hover:text-blue-600 font-medium transition duration-200"
                   >
                     Sign Out
                   </button>
@@ -283,14 +262,14 @@ const Header: React.FC = () => {
                 <>
                   <Link
                     to="/login"
-                    className="block py-2 text-gray-700 hover:text-blue-600 font-medium"
+                    className="block py-3 px-2 text-gray-700 hover:text-blue-600 font-medium transition duration-200"
                     onClick={closeMenu}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="block py-2 bg-blue-600 text-white text-center rounded-lg font-medium"
+                    className="block py-3 px-2 bg-blue-600 text-white text-center rounded-lg font-medium transition duration-200 mt-2"
                     onClick={closeMenu}
                   >
                     Sign Up

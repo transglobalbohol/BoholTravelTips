@@ -1,23 +1,25 @@
 // API Configuration
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-domain.com/api' 
-  : 'http://localhost:5000/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.MODE === 'production' 
+    ? 'https://boholtraveltips.onrender.com/api' 
+    : 'http://localhost:5000/api');
 
 // App Configuration
-export const APP_NAME = 'Guide to Bohol';
+export const APP_NAME = import.meta.env.VITE_APP_NAME || 'Bohol Travel Tips';
 export const APP_DESCRIPTION = 'Your ultimate guide to exploring Bohol, Philippines';
-export const APP_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://guidetobohol.ph' 
-  : 'http://localhost:5173';
+export const APP_URL = import.meta.env.VITE_APP_URL || 
+  (import.meta.env.MODE === 'production' 
+    ? 'https://www.boholtraveltips.com' 
+    : 'http://localhost:5173');
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-  TOKEN: 'guidetobohol_token',
-  USER: 'guidetobohol_user',
-  CART: 'guidetobohol_cart',
-  WISHLIST: 'guidetobohol_wishlist',
-  SEARCH_HISTORY: 'guidetobohol_search_history',
-  PREFERENCES: 'guidetobohol_preferences',
+  TOKEN: 'boholtraveltips_token',
+  USER: 'boholtraveltips_user',
+  CART: 'boholtraveltips_cart',
+  WISHLIST: 'boholtraveltips_wishlist',
+  SEARCH_HISTORY: 'boholtraveltips_search_history',
+  PREFERENCES: 'boholtraveltips_preferences',
 } as const;
 
 // API Endpoints
@@ -199,18 +201,18 @@ export const SEARCH_FILTERS = {
 
 // Social Media Links
 export const SOCIAL_MEDIA = {
-  FACEBOOK: 'https://facebook.com/guidetobohol',
-  INSTAGRAM: 'https://instagram.com/guidetobohol',
-  TWITTER: 'https://twitter.com/guidetobohol',
-  YOUTUBE: 'https://youtube.com/@guidetobohol',
-  TIKTOK: 'https://tiktok.com/@guidetobohol',
+  FACEBOOK: 'https://facebook.com/boholtraveltips',
+  INSTAGRAM: 'https://instagram.com/boholtraveltips',
+  TWITTER: 'https://twitter.com/boholtraveltips',
+  YOUTUBE: 'https://youtube.com/@boholtraveltips',
+  TIKTOK: 'https://tiktok.com/@boholtraveltips',
 } as const;
 
 // Contact Information
 export const CONTACT_INFO = {
   PHONE: '+63 123 456 7890',
-  EMAIL: 'info@guidetobohol.ph',
-  SUPPORT_EMAIL: 'support@guidetobohol.ph',
+  EMAIL: 'info@boholtraveltips.com',
+  SUPPORT_EMAIL: 'support@boholtraveltips.com',
   ADDRESS: 'Tagbilaran City, Bohol, Philippines',
   BUSINESS_HOURS: 'Monday - Sunday: 24/7',
 } as const;
@@ -240,7 +242,7 @@ export const ERROR_MESSAGES = {
 
 // Success Messages
 export const SUCCESS_MESSAGES = {
-  REGISTRATION_SUCCESS: 'Account created successfully! Welcome to Guide to Bohol.',
+  REGISTRATION_SUCCESS: 'Account created successfully! Welcome to Bohol Travel Tips.',
   LOGIN_SUCCESS: 'Welcome back! You have been successfully logged in.',
   LOGOUT_SUCCESS: 'You have been successfully logged out.',
   PROFILE_UPDATED: 'Your profile has been updated successfully.',

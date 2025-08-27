@@ -20,7 +20,7 @@ app.use('/api/', limiter);
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:5173', // Local development
-  'https://guideto-bohol.vercel.app', // Production frontend
+  'https://www.boholtraveltips.com', // Production frontend
   process.env.CLIENT_URL // Additional custom URL if set
 ].filter(Boolean); // Remove any undefined values
 
@@ -77,7 +77,7 @@ app.use('/api/upload', uploadRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Guide to Bohol API is running' });
+  res.json({ status: 'OK', message: 'Bohol Travel Tips API is running' });
 });
 
 // Error handling middleware
