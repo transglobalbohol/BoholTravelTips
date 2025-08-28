@@ -15,7 +15,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://boholtraveltips-backend.onrender.com wss://boholtraveltips-backend.onrender.com; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://boholtraveltips.onrender.com https://boholtraveltips-backend.onrender.com wss://boholtraveltips-backend.onrender.com wss://boholtraveltips.onrender.com https://www.google-analytics.com; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
         },
         {
           "key": "X-Frame-Options", 
@@ -73,7 +73,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://boholtraveltips-backend.onrender.com/api/$1"
+      "destination": "https://boholtraveltips.onrender.com/api/$1"
     }
   ],
   "redirects": [
