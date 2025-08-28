@@ -148,15 +148,15 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className=\"min-h-screen bg-background\">
-        <div className=\"container py-8\">
-          <div className=\"animate-pulse\">
-            <div className=\"h-8 bg-gray-200 rounded w-1/3 mb-8\"></div>
-            <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8\">
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className=\"card p-6\">
-                  <div className=\"h-6 bg-gray-200 rounded w-3/4 mb-2\"></div>
-                  <div className=\"h-8 bg-gray-200 rounded w-1/2\"></div>
+                <div key={i} className="bg-white rounded-lg shadow p-6">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
@@ -167,26 +167,26 @@ const Dashboard: React.FC = () => {
   }
 
   if (!dashboardData) {
-    return <div className=\"min-h-screen bg-background flex items-center justify-center\">Loading...</div>;
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className=\"min-h-screen bg-background\">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className=\"bg-white border-b border-border\">
-        <div className=\"container py-8\">
-          <div className=\"flex items-center justify-between\">
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className=\"text-heading-1 text-3xl mb-2\">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Welcome back, {user?.name || 'Traveler'}!
               </h1>
-              <p className=\"text-subheading\">
+              <p className="text-gray-600">
                 Your travel dashboard - manage bookings and discover new adventures
               </p>
             </div>
-            <div className=\"flex items-center space-x-4\">
-              <Link to=\"/profile\" className=\"btn-secondary flex items-center space-x-2\">
-                <Settings className=\"w-4 h-4\" />
+            <div className="flex items-center space-x-4">
+              <Link to="/profile" className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                <Settings className="w-4 h-4" />
                 <span>Settings</span>
               </Link>
             </div>
@@ -194,99 +194,99 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className=\"container py-8\">
+      <div className="container mx-auto px-4 py-8">
         {/* Stats Grid */}
-        <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8\">
-          <div className=\"card p-6\">
-            <div className=\"flex items-center justify-between mb-4\">
-              <div className=\"p-2 bg-blue-100 rounded-lg\">
-                <Calendar className=\"w-6 h-6 text-blue-600\" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Calendar className="w-6 h-6 text-blue-600" />
               </div>
-              <span className=\"text-2xl font-bold text-gray-900\">{dashboardData.stats.totalBookings}</span>
+              <span className="text-2xl font-bold text-gray-900">{dashboardData.stats.totalBookings}</span>
             </div>
             <div>
-              <h3 className=\"font-medium text-gray-900 mb-1\">Total Bookings</h3>
-              <p className=\"text-small text-gray-500\">All time bookings</p>
+              <h3 className="font-medium text-gray-900 mb-1">Total Bookings</h3>
+              <p className="text-sm text-gray-500">All time bookings</p>
             </div>
           </div>
 
-          <div className=\"card p-6\">
-            <div className=\"flex items-center justify-between mb-4\">
-              <div className=\"p-2 bg-green-100 rounded-lg\">
-                <MapPin className=\"w-6 h-6 text-green-600\" />
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <MapPin className="w-6 h-6 text-green-600" />
               </div>
-              <span className=\"text-2xl font-bold text-gray-900\">{dashboardData.stats.upcomingTrips}</span>
+              <span className="text-2xl font-bold text-gray-900">{dashboardData.stats.upcomingTrips}</span>
             </div>
             <div>
-              <h3 className=\"font-medium text-gray-900 mb-1\">Upcoming Trips</h3>
-              <p className=\"text-small text-gray-500\">Ready for adventure</p>
+              <h3 className="font-medium text-gray-900 mb-1">Upcoming Trips</h3>
+              <p className="text-sm text-gray-500">Ready for adventure</p>
             </div>
           </div>
 
-          <div className=\"card p-6\">
-            <div className=\"flex items-center justify-between mb-4\">
-              <div className=\"p-2 bg-purple-100 rounded-lg\">
-                <Heart className=\"w-6 h-6 text-purple-600\" />
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Heart className="w-6 h-6 text-purple-600" />
               </div>
-              <span className=\"text-2xl font-bold text-gray-900\">{dashboardData.stats.wishlistItems}</span>
+              <span className="text-2xl font-bold text-gray-900">{dashboardData.stats.wishlistItems}</span>
             </div>
             <div>
-              <h3 className=\"font-medium text-gray-900 mb-1\">Wishlist Items</h3>
-              <p className=\"text-small text-gray-500\">Saved for later</p>
+              <h3 className="font-medium text-gray-900 mb-1">Wishlist Items</h3>
+              <p className="text-sm text-gray-500">Saved for later</p>
             </div>
           </div>
 
-          <div className=\"card p-6\">
-            <div className=\"flex items-center justify-between mb-4\">
-              <div className=\"p-2 bg-yellow-100 rounded-lg\">
-                <TrendingUp className=\"w-6 h-6 text-yellow-600\" />
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2 bg-yellow-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-yellow-600" />
               </div>
-              <span className=\"text-2xl font-bold text-gray-900\">₱{dashboardData.stats.totalSpent.toLocaleString()}</span>
+              <span className="text-2xl font-bold text-gray-900">₱{dashboardData.stats.totalSpent.toLocaleString()}</span>
             </div>
             <div>
-              <h3 className=\"font-medium text-gray-900 mb-1\">Total Spent</h3>
-              <p className=\"text-small text-gray-500\">Travel investments</p>
+              <h3 className="font-medium text-gray-900 mb-1">Total Spent</h3>
+              <p className="text-sm text-gray-500">Travel investments</p>
             </div>
           </div>
         </div>
 
-        <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-8\">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Bookings */}
-          <div className=\"lg:col-span-2\">
-            <div className=\"card p-6\">
-              <div className=\"flex items-center justify-between mb-6\">
-                <h2 className=\"text-heading-3 text-xl\">Recent Bookings</h2>
-                <Link to=\"/bookings\" className=\"text-gray-900 hover:text-gray-600 font-medium flex items-center space-x-1\">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Recent Bookings</h2>
+                <Link to="/bookings" className="text-blue-600 hover:text-blue-500 font-medium flex items-center space-x-1">
                   <span>View All</span>
-                  <ChevronRight className=\"w-4 h-4\" />
+                  <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
               
-              <div className=\"space-y-4\">
+              <div className="space-y-4">
                 {dashboardData.recentBookings.map((booking) => (
-                  <div key={booking.id} className=\"flex items-center space-x-4 p-4 bg-gray-50 rounded-lg\">
+                  <div key={booking.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                     <img
                       src={booking.image}
                       alt={booking.title}
-                      className=\"w-16 h-16 object-cover rounded-lg\"
-                      loading=\"lazy\"
+                      className="w-16 h-16 object-cover rounded-lg"
+                      loading="lazy"
                     />
-                    <div className=\"flex-1\">
-                      <div className=\"flex items-center justify-between mb-2\">
-                        <h4 className=\"font-medium text-gray-900\">{booking.title}</h4>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-gray-900">{booking.title}</h4>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
                           {booking.status}
                         </span>
                       </div>
-                      <div className=\"flex items-center space-x-3 text-small text-gray-500\">
-                        <span className=\"capitalize\">{booking.type}</span>
+                      <div className="flex items-center space-x-3 text-sm text-gray-500">
+                        <span className="capitalize">{booking.type}</span>
                         <span>•</span>
                         <span>{new Date(booking.date).toLocaleDateString()}</span>
                       </div>
                     </div>
                     <Link
                       to={`/bookings/${booking.id}`}
-                      className=\"btn-secondary text-sm px-3 py-2\"
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-2 rounded transition-colors"
                     >
                       View
                     </Link>
@@ -296,51 +296,51 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className=\"card p-6 mt-6\">
-              <h2 className=\"text-heading-3 text-xl mb-6\">Quick Actions</h2>
-              <div className=\"grid grid-cols-2 md:grid-cols-4 gap-4\">
-                <Link to=\"/tours\" className=\"flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors\">
-                  <MapPin className=\"w-8 h-8 text-gray-600 mb-2\" />
-                  <span className=\"text-small font-medium text-gray-900\">Browse Tours</span>
+            <div className="bg-white rounded-lg shadow p-6 mt-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Link to="/tours" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <MapPin className="w-8 h-8 text-gray-600 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">Browse Tours</span>
                 </Link>
-                <Link to=\"/hotels\" className=\"flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors\">
-                  <Calendar className=\"w-8 h-8 text-gray-600 mb-2\" />
-                  <span className=\"text-small font-medium text-gray-900\">Book Hotels</span>
+                <Link to="/hotels" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <Calendar className="w-8 h-8 text-gray-600 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">Book Hotels</span>
                 </Link>
-                <Link to=\"/car-rentals\" className=\"flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors\">
-                  <CreditCard className=\"w-8 h-8 text-gray-600 mb-2\" />
-                  <span className=\"text-small font-medium text-gray-900\">Rent Cars</span>
+                <Link to="/car-rentals" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <CreditCard className="w-8 h-8 text-gray-600 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">Rent Cars</span>
                 </Link>
-                <Link to=\"/travel-guides\" className=\"flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors\">
-                  <BookOpen className=\"w-8 h-8 text-gray-600 mb-2\" />
-                  <span className=\"text-small font-medium text-gray-900\">Travel Guides</span>
+                <Link to="/travel-guides" className="flex flex-col items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <BookOpen className="w-8 h-8 text-gray-600 mb-2" />
+                  <span className="text-sm font-medium text-gray-900">Travel Guides</span>
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Sidebar */}
-          <div className=\"space-y-6\">
+          <div className="space-y-6">
             {/* Recommendations */}
-            <div className=\"card p-6\">
-              <h3 className=\"text-heading-3 text-lg mb-4\">Recommended for You</h3>
-              <div className=\"space-y-4\">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recommended for You</h3>
+              <div className="space-y-4">
                 {dashboardData.recommendations.map((item) => (
-                  <div key={item.id} className=\"flex items-center space-x-3\">
+                  <div key={item.id} className="flex items-center space-x-3">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className=\"w-12 h-12 object-cover rounded-lg\"
-                      loading=\"lazy\"
+                      className="w-12 h-12 object-cover rounded-lg"
+                      loading="lazy"
                     />
-                    <div className=\"flex-1\">
-                      <h4 className=\"font-medium text-gray-900 text-sm\">{item.title}</h4>
-                      <div className=\"flex items-center space-x-2 mt-1\">
-                        <div className=\"flex items-center space-x-1\">
-                          <Star className=\"w-3 h-3 text-yellow-400 fill-current\" />
-                          <span className=\"text-xs text-gray-600\">{item.rating}</span>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900 text-sm">{item.title}</h4>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                          <span className="text-xs text-gray-600">{item.rating}</span>
                         </div>
-                        <span className=\"text-xs font-medium text-gray-900\">
+                        <span className="text-xs font-medium text-gray-900">
                           ₱{item.price.toLocaleString()}
                         </span>
                       </div>
@@ -351,20 +351,20 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Notifications */}
-            <div className=\"card p-6\">
-              <div className=\"flex items-center justify-between mb-4\">
-                <h3 className=\"text-heading-3 text-lg\">Notifications</h3>
-                <Bell className=\"w-5 h-5 text-gray-400\" />
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                <Bell className="w-5 h-5 text-gray-400" />
               </div>
-              <div className=\"space-y-3\">
+              <div className="space-y-3">
                 {dashboardData.notifications.map((notification) => (
                   <div key={notification.id} className={`p-3 rounded-lg border ${getNotificationColor(notification.type)}`}>
-                    <div className=\"flex items-start justify-between\">
-                      <div className=\"flex-1\">
-                        <h4 className=\"font-medium text-sm text-gray-900 mb-1\">{notification.title}</h4>
-                        <p className=\"text-xs text-gray-600\">{notification.message}</p>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm text-gray-900 mb-1">{notification.title}</h4>
+                        <p className="text-xs text-gray-600">{notification.message}</p>
                       </div>
-                      <span className=\"text-xs text-gray-500\">{notification.time}</span>
+                      <span className="text-xs text-gray-500">{notification.time}</span>
                     </div>
                   </div>
                 ))}
