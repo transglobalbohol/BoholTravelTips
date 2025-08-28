@@ -4,10 +4,6 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://boholtraveltips.onrender.com https://boholtraveltips-backend.onrender.com wss://boholtraveltips-backend.onrender.com wss://boholtraveltips.onrender.com https://www.google-analytics.com; media-src 'self'; object-src 'none'; frame-src 'none'; base-uri 'self'; form-action 'self';"
-        },
-        {
           "key": "X-Frame-Options",
           "value": "DENY"
         },
@@ -38,10 +34,6 @@
     {
       "source": "/api/(.*)",
       "destination": "https://boholtraveltips.onrender.com/api/$1"
-    },
-    {
-      "source": "/((?!api).*)",
-      "destination": "/index.html"
     }
   ]
 }
