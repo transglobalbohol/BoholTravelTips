@@ -290,9 +290,6 @@ const TravelGuides: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  // Memoized categories for better performance
-  const categories = useMemo(() => ['All', 'Planning', 'Attractions', 'Itinerary', 'Food', 'Beaches', 'Transportation'], []);
-
   // Check if we're viewing a specific guide
   if (location.pathname !== '/travel-guides') {
     return (
