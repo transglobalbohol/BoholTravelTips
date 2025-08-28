@@ -1,63 +1,92 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Clock, MapPin, Users } from 'lucide-react';
+import { tourService } from '../../services/tourService';
+import { Tour } from '../../types';
 
 const FeaturedTours: React.FC = () => {
-  const featuredTours = [
-    {
-      id: '1',
-      title: 'Chocolate Hills + Tarsier Sanctuary Day Tour',
-      image: 'https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      price: 2500,
-      originalPrice: 3000,
-      duration: '8 hours',
-      rating: 4.8,
-      reviews: 324,
-      location: 'Carmen, Bohol',
-      description: 'Visit the famous Chocolate Hills and meet the adorable tarsiers in this comprehensive day tour.',
-      maxGroup: 15,
-      category: 'Nature & Wildlife'
-    },
-    {
-      id: '2',
-      title: 'Panglao Island Hopping Adventure',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      price: 1800,
-      duration: '6 hours',
-      rating: 4.9,
-      reviews: 256,
-      location: 'Panglao, Bohol',
-      description: 'Explore pristine beaches and crystal-clear waters around Panglao Island.',
-      maxGroup: 20,
-      category: 'Beach & Water Sports'
-    },
-    {
-      id: '3',
-      title: 'Loboc River Cruise with Lunch',
-      image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      price: 1200,
-      duration: '4 hours',
-      rating: 4.7,
-      reviews: 189,
-      location: 'Loboc, Bohol',
-      description: 'Enjoy a peaceful river cruise with traditional Filipino lunch and local entertainment.',
-      maxGroup: 50,
-      category: 'Cultural & Heritage'
-    },
-    {
-      id: '4',
-      title: 'Anda Hidden Beaches Tour',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      price: 2200,
-      duration: '10 hours',
-      rating: 4.6,
-      reviews: 98,
-      location: 'Anda, Bohol',
-      description: 'Discover the untouched beaches and pristine coastline of Anda municipality.',
-      maxGroup: 12,
-      category: 'Beach & Water Sports'
-    },
-  ];
+  const [featuredTours, setFeaturedTours] = useState<Tour[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchFeaturedTours();
+  }, []);
+
+  const fetchFeaturedTours = async () => {
+    try {
+      setLoading(true);
+      const response = await tourService.getFeaturedTours(8);
+      setFeaturedTours(response.data);
+    } catch (err) {
+      console.error('Error fetching featured tours:', err);
+      setError('Failed to load featured tours');
+      
+      setFeaturedTours([
+        {
+          _id: '1',
+          title: 'Chocolate Hills + Tarsier Sanctuary Day Tour',
+          slug: 'chocolate-hills-tarsier-day-tour',
+          description: 'Visit the famous Chocolate Hills and meet the adorable tarsiers in this comprehensive day tour.',
+          shortDescription: 'Visit the famous Chocolate Hills and meet the adorable tarsiers in this comprehensive day tour.',
+          category: { _id: '1', name: 'Nature & Wildlife', slug: 'nature-wildlife', description: '' },
+          price: 2500,
+          originalPrice: 3000,
+          duration: '8 hours',
+          location: 'Carmen, Bohol',
+          images: ['https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'],
+          inclusions: ['Transportation', 'Tour guide', 'Entrance fees', 'Lunch'],
+          exclusions: ['Personal expenses', 'Tips'],
+          itinerary: [],
+          availability: [new Date()],
+          maxGroupSize: 15,
+          minGroupSize: 2,
+          difficulty: 'Easy',
+          rating: 4.8,
+          reviewCount: 324,
+          reviews: [],
+          partnerId: 'partner1',
+          partner: {} as any,
+          isActive: true,
+          isFeatured: true,
+          tags: ['chocolate hills', 'tarsier', 'nature'],
+          cancellationPolicy: '24 hours before',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-white">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-heading-2 mb-4">Featured Tours & Experiences</h2>
+            <p className="text-subheading max-w-2xl mx-auto">
+              Discover the best of Bohol with our hand-picked tours and activities
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="card animate-pulse">
+                <div className="h-48 bg-gray-200 rounded-t-xl"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section-padding bg-white">
@@ -71,12 +100,24 @@ const FeaturedTours: React.FC = () => {
           </p>
         </div>
 
+        {error && (
+          <div className="text-center mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600">{error}</p>
+            <button
+              onClick={fetchFeaturedTours}
+              className="mt-2 btn-primary"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredTours.map((tour) => (
-            <div key={tour.id} className="card-interactive overflow-hidden">
+          {featuredTours.slice(0, 4).map((tour) => (
+            <div key={tour._id} className="card-interactive overflow-hidden">
               <div className="relative">
                 <img
-                  src={tour.image}
+                  src={tour.images[0]}
                   alt={tour.title}
                   className="w-full h-48 object-cover"
                   loading="lazy"
@@ -93,7 +134,9 @@ const FeaturedTours: React.FC = () => {
               
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="badge text-xs">{tour.category}</span>
+                  <span className="badge text-xs">
+                    {typeof tour.category === 'string' ? tour.category : tour.category.name}
+                  </span>
                   <div className="flex items-center space-x-1 text-small text-gray-500">
                     <Clock className="w-3 h-3" />
                     <span>{tour.duration}</span>
@@ -110,7 +153,7 @@ const FeaturedTours: React.FC = () => {
                 </div>
                 
                 <p className="text-body text-sm mb-4 line-clamp-2">
-                  {tour.description}
+                  {tour.shortDescription}
                 </p>
                 
                 <div className="flex items-center justify-between mb-4">
@@ -126,12 +169,12 @@ const FeaturedTours: React.FC = () => {
                       ))}
                     </div>
                     <span className="text-small text-gray-600">
-                      {tour.rating} ({tour.reviews})
+                      {tour.rating} ({tour.reviewCount})
                     </span>
                   </div>
                   <div className="flex items-center space-x-1 text-small text-gray-500">
                     <Users className="w-3 h-3" />
-                    <span>Max {tour.maxGroup}</span>
+                    <span>Max {tour.maxGroupSize}</span>
                   </div>
                 </div>
                 
@@ -150,7 +193,7 @@ const FeaturedTours: React.FC = () => {
                 </div>
                 
                 <Link
-                  to={`/tours/${tour.id}`}
+                  to={`/tours/${tour._id}`}
                   className="btn-primary w-full text-center block"
                 >
                   View Details

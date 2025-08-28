@@ -1,233 +1,211 @@
 import { apiClient } from './api';
-import { Booking, BookingFormData, ApiResponse, PaginatedResponse } from '../types';
+import { SearchParams, PaginatedResponse, ApiResponse } from '../types';
 
-export interface BookingResponse {
-  success: boolean;
-  booking: Booking;
-  message: string;
+export interface Booking {
+  _id: string;
+  userId: string;
+  tourId?: string;
+  hotelId?: string;
+  bookingType: 'tour' | 'hotel' | 'package';
+  bookingDate: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  travelers: number;
+  totalPrice: number;
+  status: 'pending' | 'confirmed' | 'upcoming' | 'completed' | 'cancelled' | 'no-show';
+  paymentStatus: 'pending' | 'paid' | 'partially-paid' | 'refunded' | 'failed';
+  confirmationCode: string;
+  guestDetails?: any;
+  contactInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
+  specialRequests?: string;
+  cancellationReason?: string;
+  createdAt: string;
+  updatedAt: string;
+  tour?: {
+    _id: string;
+    title: string;
+    price: number;
+    images: string[];
+    location: string;
+  };
+  hotel?: {
+    _id: string;
+    name: string;
+    pricePerNight: number;
+    images: string[];
+    location: string;
+  };
 }
 
-export interface PaymentData {
-  paymentMethod: string;
-  cardDetails?: {
-    cardNumber: string;
-    expiryDate: string;
-    cvv: string;
-    cardholderName: string;
-  };
-  billingAddress?: {
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
+interface BookingStats {
+  totalBookings: number;
+  totalRevenue: number;
+  averageBookingValue: number;
+  tourBookings: number;
+  hotelBookings: number;
+  confirmedBookings: number;
+  cancelledBookings: number;
+}
+
+interface BookingFilters extends SearchParams {
+  status?: string;
+  bookingType?: string;
+  userId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
 }
 
 export const bookingService = {
-  // Create a new booking
-  createBooking: async (bookingData: BookingFormData): Promise<BookingResponse> => {
+  // Get all bookings (admin only)
+  getBookings: async (params?: BookingFilters): Promise<PaginatedResponse<Booking>> => {
+    const response = await apiClient.get('/bookings', { params });
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 10,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
+  },
+
+  // Create new booking
+  createBooking: async (bookingData: {
+    tourId?: string;
+    hotelId?: string;
+    bookingType: 'tour' | 'hotel' | 'package';
+    bookingDate: string;
+    checkInDate?: string;
+    checkOutDate?: string;
+    travelers: number;
+    guestDetails?: any;
+    contactInfo: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string;
+    };
+    specialRequests?: string;
+  }): Promise<ApiResponse<Booking>> => {
     const response = await apiClient.post('/bookings', bookingData);
     return response.data;
   },
 
-  // Process payment for booking
-  processPayment: async (bookingId: string, paymentData: PaymentData): Promise<ApiResponse<{
-    paymentStatus: string;
-    transactionId: string;
-    receiptUrl?: string;
-  }>> => {
-    const response = await apiClient.post(`/bookings/${bookingId}/payment`, paymentData);
-    return response.data;
+  // Get user bookings
+  getUserBookings: async (userId: string, params?: BookingFilters): Promise<PaginatedResponse<Booking>> => {
+    const response = await apiClient.get(`/bookings/user/${userId}`, { params });
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 10,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
-  // Get booking by ID
-  getBooking: async (id: string): Promise<ApiResponse<Booking>> => {
-    const response = await apiClient.get(`/bookings/${id}`);
-    return response.data;
-  },
-
-  // Get booking by confirmation code
-  getBookingByCode: async (confirmationCode: string): Promise<ApiResponse<Booking>> => {
-    const response = await apiClient.get(`/bookings/confirmation/${confirmationCode}`);
-    return response.data;
-  },
-
-  // Get user's bookings
-  getUserBookings: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    type?: 'tour' | 'hotel';
-  }): Promise<PaginatedResponse<Booking>> => {
-    const response = await apiClient.get('/bookings/user', { params });
+  // Get single booking
+  getBooking: async (bookingId: string): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.get(`/bookings/${bookingId}`);
     return response.data;
   },
 
   // Update booking
-  updateBooking: async (id: string, updateData: Partial<Booking>): Promise<BookingResponse> => {
-    const response = await apiClient.put(`/bookings/${id}`, updateData);
+  updateBooking: async (bookingId: string, updateData: Partial<Booking>): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.put(`/bookings/${bookingId}`, updateData);
     return response.data;
   },
 
   // Cancel booking
-  cancelBooking: async (id: string, reason?: string): Promise<ApiResponse<{
-    message: string;
-    refundAmount?: number;
-    refundStatus?: string;
+  cancelBooking: async (bookingId: string, cancellationReason?: string): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.delete(`/bookings/${bookingId}`, {
+      data: { cancellationReason }
+    });
+    return response.data;
+  },
+
+  // Get booking statistics (admin only)
+  getBookingStats: async (startDate?: string, endDate?: string): Promise<ApiResponse<{
+    overview: BookingStats;
+    monthlyStats: Array<{
+      _id: { year: number; month: number };
+      bookings: number;
+      revenue: number;
+    }>;
   }>> => {
-    const response = await apiClient.post(`/bookings/${id}/cancel`, { reason });
+    const params: any = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    
+    const response = await apiClient.get('/bookings/stats', { params });
     return response.data;
   },
 
-  // Request booking modification
-  requestModification: async (id: string, changes: {
-    newDate?: string;
-    newTravelers?: number;
-    reason: string;
-  }): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post(`/bookings/${id}/modify`, changes);
-    return response.data;
-  },
-
-  // Confirm booking (for tour operators)
-  confirmBooking: async (id: string, notes?: string): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post(`/bookings/${id}/confirm`, { notes });
-    return response.data;
-  },
-
-  // Mark booking as completed
-  completeBooking: async (id: string): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post(`/bookings/${id}/complete`);
-    return response.data;
-  },
-
-  // Add special requests to booking
-  addSpecialRequests: async (id: string, requests: string): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post(`/bookings/${id}/special-requests`, { requests });
-    return response.data;
-  },
-
-  // Get booking receipt
-  getReceipt: async (id: string): Promise<ApiResponse<{
-    receiptUrl: string;
-    receiptNumber: string;
-  }>> => {
-    const response = await apiClient.get(`/bookings/${id}/receipt`);
-    return response.data;
-  },
-
-  // Download booking voucher
-  getVoucher: async (id: string): Promise<Blob> => {
-    const response = await apiClient.get(`/bookings/${id}/voucher`, {
+  // Generate booking receipt
+  getBookingReceipt: async (bookingId: string): Promise<Blob> => {
+    const response = await apiClient.get(`/bookings/${bookingId}/receipt`, {
       responseType: 'blob'
     });
     return response.data;
   },
 
-  // Send booking confirmation email
-  resendConfirmation: async (id: string): Promise<ApiResponse<{ message: string }>> => {
-    const response = await apiClient.post(`/bookings/${id}/resend-confirmation`);
+  // Confirm booking (admin/partner)
+  confirmBooking: async (bookingId: string): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.post(`/bookings/${bookingId}/confirm`);
     return response.data;
   },
 
-  // Get booking statistics (for admin/partners)
-  getBookingStats: async (params?: {
-    startDate?: string;
-    endDate?: string;
-    partnerId?: string;
-    type?: 'tour' | 'hotel';
-  }): Promise<ApiResponse<{
-    totalBookings: number;
-    totalRevenue: number;
-    averageBookingValue: number;
-    bookingsByStatus: Record<string, number>;
-    bookingsByMonth: Array<{ month: string; bookings: number; revenue: number }>;
-    topTours: Array<{ tourId: string; title: string; bookings: number }>;
-  }>> => {
-    const response = await apiClient.get('/bookings/stats', { params });
+  // Mark booking as completed (admin/partner)
+  completeBooking: async (bookingId: string): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.post(`/bookings/${bookingId}/complete`);
     return response.data;
   },
 
-  // Check booking availability before creating
-  checkBookingAvailability: async (data: {
-    tourId?: string;
-    hotelId?: string;
-    date: string;
-    travelers: number;
-    checkIn?: string;
-    checkOut?: string;
-  }): Promise<ApiResponse<{
-    available: boolean;
-    price: number;
-    availableSlots?: number;
-    blockedDates?: string[];
-    alternativeDates?: Array<{ date: string; price: number }>;
-  }>> => {
-    const response = await apiClient.post('/bookings/check-availability', data);
+  // Mark booking as no-show (admin/partner)
+  markNoShow: async (bookingId: string): Promise<ApiResponse<Booking>> => {
+    const response = await apiClient.post(`/bookings/${bookingId}/no-show`);
     return response.data;
   },
 
-  // Get booking pricing
-  getBookingPrice: async (data: {
-    tourId?: string;
-    hotelId?: string;
-    travelers: number;
-    date?: string;
-    checkIn?: string;
-    checkOut?: string;
-  }): Promise<ApiResponse<{
-    basePrice: number;
-    taxes: number;
-    fees: number;
-    totalPrice: number;
-    priceBreakdown: Array<{ description: string; amount: number }>;
+  // Process refund (admin only)
+  processRefund: async (bookingId: string, refundAmount: number, reason: string): Promise<ApiResponse<{
+    message: string;
+    refundAmount: number;
   }>> => {
-    const response = await apiClient.post('/bookings/calculate-price', data);
-    return response.data;
-  },
-
-  // Apply promo code
-  applyPromoCode: async (bookingData: any, promoCode: string): Promise<ApiResponse<{
-    discountAmount: number;
-    newTotal: number;
-    promoCodeDetails: {
-      code: string;
-      description: string;
-      discountType: 'percentage' | 'fixed';
-      discountValue: number;
-    };
-  }>> => {
-    const response = await apiClient.post('/bookings/apply-promo', {
-      ...bookingData,
-      promoCode
+    const response = await apiClient.post(`/bookings/${bookingId}/refund`, {
+      refundAmount,
+      reason
     });
     return response.data;
   },
 
-  // Get available payment methods
-  getPaymentMethods: async (): Promise<ApiResponse<Array<{
-    id: string;
-    name: string;
-    type: string;
-    fees: number;
-    isActive: boolean;
-    logo?: string;
-  }>>> => {
-    const response = await apiClient.get('/bookings/payment-methods');
+  // Send booking reminder
+  sendBookingReminder: async (bookingId: string): Promise<ApiResponse<{ message: string }>> => {
+    const response = await apiClient.post(`/bookings/${bookingId}/remind`);
     return response.data;
-  },
-
-  // Verify payment status
-  verifyPayment: async (bookingId: string, paymentId: string): Promise<ApiResponse<{
-    paymentStatus: string;
-    transactionId: string;
-    paidAmount: number;
-    paymentDate: string;
-  }>> => {
-    const response = await apiClient.get(`/bookings/${bookingId}/payment/${paymentId}/verify`);
-    return response.data;
-  },
+  }
 };
 
 export default bookingService;

@@ -1,0 +1,8 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="180" height="180" rx="30" fill="#2563eb"/>
+  <path d="M90 45C112.091 45 130 62.9086 130 85V95C130 117.091 112.091 135 90 135C67.9086 135 50 117.091 50 95V85C50 62.9086 67.9086 45 90 45Z" fill="white"/>
+  <circle cx="75" cy="80" r="6" fill="#2563eb"/>
+  <circle cx="105" cy="80" r="6" fill="#2563eb"/>
+  <path d="M75 100C75 108.284 81.716 115 90 115C98.284 115 105 108.284 105 100" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+  <text x="90" y="155" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">BOHOL</text>
+</svg>

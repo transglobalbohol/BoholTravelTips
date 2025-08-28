@@ -3,6 +3,119 @@ const Tour = require('../models/Tour');
 const Hotel = require('../models/Hotel');
 const User = require('../models/User');
 
+// @desc    Get all bookings with filters
+// @route   GET /api/bookings
+// @access  Private (Admin only)
+const getBookings = async (req, res) => {
+  try {
+    const {
+      status,
+      bookingType,
+      userId,
+      dateFrom,
+      dateTo,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    // Only admin can access all bookings
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin privileges required.'
+      });
+    }
+
+    let query = {};
+    let sortObj = {};
+
+    if (status && status !== '') {
+      query.status = status;
+    }
+
+    if (bookingType && bookingType !== '') {
+      query.bookingType = bookingType;
+    }
+
+    if (userId && userId !== '') {
+      query.userId = userId;
+    }
+
+    if (dateFrom || dateTo) {
+      query.bookingDate = {};
+      if (dateFrom) query.bookingDate.$gte = new Date(dateFrom);
+      if (dateTo) query.bookingDate.$lte = new Date(dateTo);
+    }
+
+    if (search) {
+      query.$or = [
+        { confirmationCode: { $regex: search, $options: 'i' } },
+        { 'contactInfo.firstName': { $regex: search, $options: 'i' } },
+        { 'contactInfo.lastName': { $regex: search, $options: 'i' } },
+        { 'contactInfo.email': { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    switch (sortBy) {
+      case 'date':
+        sortObj.bookingDate = sortOrder === 'asc' ? 1 : -1;
+        break;
+      case 'price':
+        sortObj.totalPrice = sortOrder === 'asc' ? 1 : -1;
+        break;
+      case 'status':
+        sortObj.status = sortOrder === 'asc' ? 1 : -1;
+        break;
+      default:
+        sortObj.createdAt = sortOrder === 'asc' ? 1 : -1;
+    }
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const bookings = await Booking.find(query)
+      .populate('tourId', 'title price images location')
+      .populate('hotelId', 'name pricePerNight images location')
+      .populate('userId', 'name email')
+      .sort(sortObj)
+      .limit(limitNum)
+      .skip(skip);
+
+    const total = await Booking.countDocuments(query);
+    const totalPages = Math.ceil(total / limitNum);
+
+    res.json({
+      success: true,
+      count: bookings.length,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages,
+      hasNextPage: pageNum < totalPages,
+      hasPrevPage: pageNum > 1,
+      data: bookings,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1
+      }
+    });
+  } catch (error) {
+    console.error('Get bookings error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching bookings'
+    });
+  }
+};
+
 // @desc    Create new booking
 // @route   POST /api/bookings
 // @access  Private
@@ -114,6 +227,16 @@ const createBooking = async (req, res) => {
 const getUserBookings = async (req, res) => {
   try {
     const { userId } = req.params;
+    const {
+      status,
+      bookingType,
+      dateFrom,
+      dateTo,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10
+    } = req.query;
 
     // Make sure user can only access their own bookings
     if (userId !== req.user.id && req.user.role !== 'admin') {
@@ -123,15 +246,69 @@ const getUserBookings = async (req, res) => {
       });
     }
 
-    const bookings = await Booking.find({ userId })
+    let query = { userId };
+    let sortObj = {};
+
+    if (status && status !== '') {
+      query.status = status;
+    }
+
+    if (bookingType && bookingType !== '') {
+      query.bookingType = bookingType;
+    }
+
+    if (dateFrom || dateTo) {
+      query.bookingDate = {};
+      if (dateFrom) query.bookingDate.$gte = new Date(dateFrom);
+      if (dateTo) query.bookingDate.$lte = new Date(dateTo);
+    }
+
+    switch (sortBy) {
+      case 'date':
+        sortObj.bookingDate = sortOrder === 'asc' ? 1 : -1;
+        break;
+      case 'price':
+        sortObj.totalPrice = sortOrder === 'asc' ? 1 : -1;
+        break;
+      case 'status':
+        sortObj.status = sortOrder === 'asc' ? 1 : -1;
+        break;
+      default:
+        sortObj.createdAt = sortOrder === 'asc' ? 1 : -1;
+    }
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    const bookings = await Booking.find(query)
       .populate('tourId', 'title price images location')
       .populate('hotelId', 'name pricePerNight images location')
-      .sort('-createdAt');
+      .sort(sortObj)
+      .limit(limitNum)
+      .skip(skip);
+
+    const total = await Booking.countDocuments(query);
+    const totalPages = Math.ceil(total / limitNum);
 
     res.json({
       success: true,
       count: bookings.length,
-      data: bookings
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages,
+      hasNextPage: pageNum < totalPages,
+      hasPrevPage: pageNum > 1,
+      data: bookings,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1
+      }
     });
   } catch (error) {
     console.error('Get user bookings error:', error);
@@ -264,10 +441,96 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+// @desc    Get booking statistics
+// @route   GET /api/bookings/stats
+// @access  Private (Admin only)
+const getBookingStats = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Admin privileges required.'
+      });
+    }
+
+    const { startDate, endDate } = req.query;
+    let matchStage = {};
+
+    if (startDate || endDate) {
+      matchStage.createdAt = {};
+      if (startDate) matchStage.createdAt.$gte = new Date(startDate);
+      if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+    }
+
+    const stats = await Booking.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: null,
+          totalBookings: { $sum: 1 },
+          totalRevenue: { $sum: '$totalPrice' },
+          averageBookingValue: { $avg: '$totalPrice' },
+          tourBookings: {
+            $sum: { $cond: [{ $eq: ['$bookingType', 'tour'] }, 1, 0] }
+          },
+          hotelBookings: {
+            $sum: { $cond: [{ $eq: ['$bookingType', 'hotel'] }, 1, 0] }
+          },
+          confirmedBookings: {
+            $sum: { $cond: [{ $eq: ['$status', 'confirmed'] }, 1, 0] }
+          },
+          cancelledBookings: {
+            $sum: { $cond: [{ $eq: ['$status', 'cancelled'] }, 1, 0] }
+          }
+        }
+      }
+    ]);
+
+    const monthlyStats = await Booking.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' }
+          },
+          bookings: { $sum: 1 },
+          revenue: { $sum: '$totalPrice' }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        overview: stats[0] || {
+          totalBookings: 0,
+          totalRevenue: 0,
+          averageBookingValue: 0,
+          tourBookings: 0,
+          hotelBookings: 0,
+          confirmedBookings: 0,
+          cancelledBookings: 0
+        },
+        monthlyStats
+      }
+    });
+  } catch (error) {
+    console.error('Get booking stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error fetching booking statistics'
+    });
+  }
+};
+
 module.exports = {
+  getBookings,
   createBooking,
   getUserBookings,
   getBooking,
   updateBooking,
-  cancelBooking
+  cancelBooking,
+  getBookingStats
 };

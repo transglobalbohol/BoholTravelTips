@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const itinerarySchema = new mongoose.Schema({
   time: {
@@ -22,10 +23,18 @@ const tourSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Title cannot be more than 100 characters']
   },
+  slug: {
+    type: String,
+    unique: true
+  },
   description: {
     type: String,
     required: [true, 'Please provide a tour description'],
     maxlength: [2000, 'Description cannot be more than 2000 characters']
+  },
+  shortDescription: {
+    type: String,
+    maxlength: [200, 'Short description cannot be more than 200 characters']
   },
   category: {
     type: String,
@@ -40,13 +49,21 @@ const tourSchema = new mongoose.Schema({
       'Wildlife',
       'Island Hopping',
       'Water Sports',
-      'Photography'
+      'Photography',
+      'Nature & Wildlife',
+      'Beach & Water Sports',
+      'Cultural & Heritage',
+      'Day Trips'
     ]
   },
   price: {
     type: Number,
     required: [true, 'Please provide a tour price'],
     min: [0, 'Price cannot be negative']
+  },
+  originalPrice: {
+    type: Number,
+    min: [0, 'Original price cannot be negative']
   },
   duration: {
     type: String,
@@ -76,6 +93,11 @@ const tourSchema = new mongoose.Schema({
   maxGroupSize: {
     type: Number,
     required: [true, 'Please provide maximum group size'],
+    min: [1, 'Group size must be at least 1']
+  },
+  minGroupSize: {
+    type: Number,
+    default: 1,
     min: [1, 'Group size must be at least 1']
   },
   difficulty: {
@@ -109,12 +131,42 @@ const tourSchema = new mongoose.Schema({
   featured: {
     type: Boolean,
     default: false
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
+  tags: [{
+    type: String,
+    trim: true
+  }],
+  cancellationPolicy: {
+    type: String,
+    default: 'Free cancellation up to 24 hours before the tour'
+  },
+  importantNotes: {
+    type: String
   }
 }, {
   timestamps: true
 });
 
-// Index for search functionality
+tourSchema.pre('save', function(next) {
+  if (!this.slug || this.isModified('title')) {
+    this.slug = slugify(this.title, { lower: true, strict: true });
+  }
+  
+  if (this.shortDescription === undefined && this.description) {
+    this.shortDescription = this.description.substring(0, 200);
+  }
+  
+  if (this.featured && !this.isFeatured) {
+    this.isFeatured = this.featured;
+  }
+  
+  next();
+});
+
 tourSchema.index({ title: 'text', description: 'text', location: 'text' });
 tourSchema.index({ category: 1, price: 1, rating: -1 });
 

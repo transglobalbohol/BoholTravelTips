@@ -1,148 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Users, Clock, Filter, Search, Star, FileText, Download, MoreVertical, Eye } from 'lucide-react';
-
-interface Booking {
-  id: string;
-  confirmationCode: string;
-  type: 'tour' | 'hotel' | 'car_rental';
-  title: string;
-  image: string;
-  location: string;
-  date: string;
-  endDate?: string;
-  travelers: number;
-  totalPrice: number;
-  status: 'upcoming' | 'completed' | 'cancelled' | 'pending';
-  paymentStatus: 'paid' | 'pending' | 'refunded';
-  createdAt: string;
-  rating?: number;
-  hasReview: boolean;
-}
-
-const mockBookings: Booking[] = [
-  {
-    id: '1',
-    confirmationCode: 'GTB-ABC123',
-    type: 'tour',
-    title: 'Chocolate Hills + Tarsier Sanctuary Day Tour',
-    image: 'https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Carmen, Bohol',
-    date: '2024-12-25',
-    travelers: 2,
-    totalPrice: 5000,
-    status: 'upcoming',
-    paymentStatus: 'paid',
-    createdAt: '2024-12-10T10:00:00Z',
-    hasReview: false
-  },
-  {
-    id: '2',
-    confirmationCode: 'GTB-DEF456',
-    type: 'hotel',
-    title: 'Amorita Resort',
-    image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Panglao Island',
-    date: '2024-12-22',
-    endDate: '2024-12-24',
-    travelers: 2,
-    totalPrice: 17000,
-    status: 'upcoming',
-    paymentStatus: 'paid',
-    createdAt: '2024-12-08T14:30:00Z',
-    hasReview: false
-  },
-  {
-    id: '3',
-    confirmationCode: 'GTB-GHI789',
-    type: 'tour',
-    title: 'Panglao Island Hopping Adventure',
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Panglao Island',
-    date: '2024-11-15',
-    travelers: 4,
-    totalPrice: 7200,
-    status: 'completed',
-    paymentStatus: 'paid',
-    createdAt: '2024-11-01T09:15:00Z',
-    rating: 5,
-    hasReview: true
-  },
-  {
-    id: '4',
-    confirmationCode: 'GTB-JKL012',
-    type: 'car_rental',
-    title: 'Toyota Avanza',
-    image: 'https://images.unsplash.com/photo-1570733117311-d990c3816c47?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Tagbilaran City',
-    date: '2024-10-20',
-    endDate: '2024-10-22',
-    travelers: 1,
-    totalPrice: 6400,
-    status: 'completed',
-    paymentStatus: 'paid',
-    createdAt: '2024-10-10T16:45:00Z',
-    rating: 4,
-    hasReview: true
-  },
-  {
-    id: '5',
-    confirmationCode: 'GTB-MNO345',
-    type: 'tour',
-    title: 'Loboc River Cruise with Lunch',
-    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Loboc, Bohol',
-    date: '2024-09-10',
-    travelers: 3,
-    totalPrice: 3600,
-    status: 'completed',
-    paymentStatus: 'paid',
-    createdAt: '2024-08-25T11:20:00Z',
-    rating: 4,
-    hasReview: true
-  },
-  {
-    id: '6',
-    confirmationCode: 'GTB-PQR678',
-    type: 'hotel',
-    title: 'Bellevue Resort Bohol',
-    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-    location: 'Panglao Island',
-    date: '2024-08-15',
-    endDate: '2024-08-18',
-    travelers: 2,
-    totalPrice: 20400,
-    status: 'cancelled',
-    paymentStatus: 'refunded',
-    createdAt: '2024-07-30T13:10:00Z',
-    hasReview: false
-  }
-];
+import { bookingService, Booking } from '../services/bookingService';
+import { useAuth } from '../context/AuthContext';
 
 const Bookings: React.FC = () => {
+  const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
-    // Simulate API call
-    const fetchBookings = () => {
-      setLoading(true);
-      // Instant loading for better UX
-      setTimeout(() => {
-        setBookings(mockBookings);
-        setLoading(false);
-      }, 100);
-    };
+    if (user) {
+      fetchBookings();
+    }
+  }, [user, activeFilter, searchTerm, sortBy, currentPage]);
 
-    fetchBookings();
-  }, []);
+  const fetchBookings = async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params: any = {
+        page: currentPage,
+        limit: 10,
+        sortBy: sortBy === 'date' ? 'bookingDate' : sortBy === 'price' ? 'totalPrice' : 'createdAt',
+        sortOrder: 'desc'
+      };
+
+      if (activeFilter !== 'all') {
+        params.status = activeFilter;
+      }
+
+      if (searchTerm) {
+        params.search = searchTerm;
+      }
+
+      const response = await bookingService.getUserBookings(user.id, params);
+      
+      setBookings(response.data);
+      setTotalResults(response.total || 0);
+      setTotalPages(response.totalPages || 0);
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setError('Failed to fetch bookings. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      const reason = prompt('Please provide a reason for cancellation:');
+      if (!reason) return;
+
+      await bookingService.cancelBooking(bookingId, reason);
+      await fetchBookings(); // Refresh bookings
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      alert('Failed to cancel booking. Please try again.');
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'upcoming':
+      case 'confirmed':
         return 'bg-blue-100 text-blue-800';
       case 'completed':
         return 'bg-green-100 text-green-800';
@@ -163,33 +94,16 @@ const Bookings: React.FC = () => {
         return 'bg-yellow-100 text-yellow-800';
       case 'refunded':
         return 'bg-blue-100 text-blue-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredBookings = bookings
-    .filter(booking => {
-      const matchesFilter = activeFilter === 'all' || booking.status === activeFilter;
-      const matchesSearch = booking.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          booking.confirmationCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          booking.location.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesFilter && matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'date') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      } else if (sortBy === 'price') {
-        return b.totalPrice - a.totalPrice;
-      } else if (sortBy === 'created') {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      return 0;
-    });
-
   const filterOptions = [
-    { value: 'all', label: 'All Bookings', count: bookings.length },
-    { value: 'upcoming', label: 'Upcoming', count: bookings.filter(b => b.status === 'upcoming').length },
+    { value: 'all', label: 'All Bookings', count: totalResults },
+    { value: 'upcoming', label: 'Upcoming', count: bookings.filter(b => b.status === 'upcoming' || b.status === 'confirmed').length },
     { value: 'completed', label: 'Completed', count: bookings.filter(b => b.status === 'completed').length },
     { value: 'cancelled', label: 'Cancelled', count: bookings.filter(b => b.status === 'cancelled').length },
     { value: 'pending', label: 'Pending', count: bookings.filter(b => b.status === 'pending').length }
@@ -208,7 +122,21 @@ const Bookings: React.FC = () => {
     return formattedStart;
   };
 
-  if (loading) {
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="card p-8 text-center">
+          <h2 className="text-heading-2 mb-4">Access Denied</h2>
+          <p className="text-body mb-6">Please log in to view your bookings.</p>
+          <Link to="/auth/login" className="btn-primary">
+            Log In
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && currentPage === 1) {
     return (
       <div className="min-h-screen bg-background">
         <div className="bg-white border-b border-border">
@@ -265,9 +193,12 @@ const Bookings: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="Search by title, code, location..."
+                  placeholder="Search by confirmation code..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="input"
                 />
               </div>
@@ -282,7 +213,10 @@ const Bookings: React.FC = () => {
                   {filterOptions.map((option) => (
                     <button
                       key={option.value}
-                      onClick={() => setActiveFilter(option.value)}
+                      onClick={() => {
+                        setActiveFilter(option.value);
+                        setCurrentPage(1);
+                      }}
                       className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-lg transition-colors ${
                         activeFilter === option.value
                           ? 'bg-gray-900 text-white'
@@ -307,7 +241,10 @@ const Bookings: React.FC = () => {
                 <label className="form-label">Sort By</label>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   className="input"
                 >
                   <option value="date">Booking Date</option>
@@ -323,7 +260,7 @@ const Bookings: React.FC = () => {
             {/* Results Info */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-body">
-                {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found
+                {totalResults} booking{totalResults !== 1 ? 's' : ''} found
               </p>
               <button className="btn-secondary flex items-center space-x-2">
                 <Download className="w-4 h-4" />
@@ -331,17 +268,30 @@ const Bookings: React.FC = () => {
               </button>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="card p-6 mb-6 border-red-200 bg-red-50">
+                <p className="text-red-600">{error}</p>
+                <button
+                  onClick={fetchBookings}
+                  className="btn-primary mt-3"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
             {/* Bookings Cards */}
-            <div className="space-y-6">
-              {filteredBookings.map((booking) => (
-                <div key={booking.id} className="card">
+            <div className="space-y-6 mb-8">
+              {bookings.map((booking) => (
+                <div key={booking._id} className="card">
                   <div className="p-6">
                     <div className="flex flex-col md:flex-row gap-6">
                       {/* Image */}
                       <div className="md:w-24 md:h-24 h-48 rounded-lg overflow-hidden flex-shrink-0">
                         <img
-                          src={booking.image}
-                          alt={booking.title}
+                          src={booking.tour?.images?.[0] || booking.hotel?.images?.[0] || '/placeholder-image.jpg'}
+                          alt={booking.tour?.title || booking.hotel?.name || 'Booking'}
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
@@ -359,11 +309,11 @@ const Bookings: React.FC = () => {
                                     {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                   </span>
                                   <span className="text-small text-gray-500">
-                                    {booking.type.replace('_', ' ').toUpperCase()}
+                                    {booking.bookingType.toUpperCase()}
                                   </span>
                                 </div>
                                 <h3 className="text-heading-3 text-lg font-semibold text-gray-900 mb-1">
-                                  {booking.title}
+                                  {booking.tour?.title || booking.hotel?.name}
                                 </h3>
                                 <p className="text-small text-gray-500 mb-2">
                                   Confirmation: {booking.confirmationCode}
@@ -381,11 +331,11 @@ const Bookings: React.FC = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                               <div className="flex items-center space-x-2 text-small text-gray-600">
                                 <MapPin className="w-4 h-4" />
-                                <span>{booking.location}</span>
+                                <span>{booking.tour?.location || booking.hotel?.location}</span>
                               </div>
                               <div className="flex items-center space-x-2 text-small text-gray-600">
                                 <Calendar className="w-4 h-4" />
-                                <span>{formatDateRange(booking.date, booking.endDate)}</span>
+                                <span>{formatDateRange(booking.bookingDate, booking.checkOutDate)}</span>
                               </div>
                               <div className="flex items-center space-x-2 text-small text-gray-600">
                                 <Users className="w-4 h-4" />
@@ -403,47 +353,33 @@ const Bookings: React.FC = () => {
                                   {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                                 </span>
                               </div>
-
-                              {/* Rating (if completed and reviewed) */}
-                              {booking.rating && booking.hasReview && (
-                                <div className="flex items-center space-x-1">
-                                  <div className="flex space-x-1">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        className={`w-4 h-4 ${
-                                          i < booking.rating! ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className="text-small text-gray-600">Your rating</span>
-                                </div>
-                              )}
                             </div>
 
                             {/* Action Buttons */}
                             <div className="flex flex-wrap gap-3">
                               <Link
-                                to={`/bookings/${booking.id}`}
+                                to={`/bookings/${booking._id}`}
                                 className="btn-secondary flex items-center space-x-2 text-sm"
                               >
                                 <Eye className="w-4 h-4" />
                                 <span>View Details</span>
                               </Link>
 
-                              {booking.status === 'upcoming' && (
+                              {(booking.status === 'upcoming' || booking.status === 'confirmed') && (
                                 <>
                                   <button className="btn-secondary text-sm">
                                     Modify Booking
                                   </button>
-                                  <button className="text-red-600 hover:text-red-700 text-sm font-medium">
+                                  <button 
+                                    onClick={() => handleCancelBooking(booking._id)}
+                                    className="text-red-600 hover:text-red-700 text-sm font-medium"
+                                  >
                                     Cancel
                                   </button>
                                 </>
                               )}
 
-                              {booking.status === 'completed' && !booking.hasReview && (
+                              {booking.status === 'completed' && (
                                 <button className="btn-primary text-sm flex items-center space-x-2">
                                   <Star className="w-4 h-4" />
                                   <span>Write Review</span>
@@ -464,8 +400,50 @@ const Bookings: React.FC = () => {
               ))}
             </div>
 
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                
+                <div className="flex space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const page = i + Math.max(1, currentPage - 2);
+                    if (page > totalPages) return null;
+                    
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-2 rounded ${
+                          page === currentPage
+                            ? 'bg-primary text-white'
+                            : 'bg-white border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
             {/* No Results */}
-            {filteredBookings.length === 0 && (
+            {!loading && bookings.length === 0 && (
               <div className="card p-12 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calendar className="w-8 h-8 text-gray-400" />
@@ -481,6 +459,7 @@ const Bookings: React.FC = () => {
                     onClick={() => {
                       setSearchTerm('');
                       setActiveFilter('all');
+                      setCurrentPage(1);
                     }}
                     className="btn-primary"
                   >

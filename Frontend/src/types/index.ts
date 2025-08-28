@@ -1,5 +1,6 @@
 export interface User {
   _id: string;
+  id: string;
   name: string;
   email: string;
   role: 'user' | 'admin' | 'partner';
@@ -16,7 +17,7 @@ export interface Tour {
   slug: string;
   description: string;
   shortDescription: string;
-  category: TourCategory;
+  category: TourCategory | string;
   price: number;
   originalPrice?: number;
   duration: string;
@@ -33,7 +34,7 @@ export interface Tour {
   reviewCount: number;
   reviews: Review[];
   partnerId: string;
-  partner: TourOperator;
+  partner?: TourOperator;
   isActive: boolean;
   isFeatured: boolean;
   tags: string[];
@@ -231,6 +232,7 @@ export interface Destination {
 
 export interface SearchFilters {
   destination?: string;
+  location?: string;
   category?: string;
   priceRange?: {
     min: number;
@@ -238,9 +240,20 @@ export interface SearchFilters {
   };
   duration?: string;
   date?: string;
+  dateFrom?: string;
+  dateTo?: string;
   rating?: number;
-  sortBy?: 'price' | 'rating' | 'popularity' | 'latest';
+  difficulty?: string;
+  amenities?: string[];
+  tags?: string[];
+  status?: string;
+  bookingType?: string;
+  sortBy?: 'price' | 'rating' | 'popularity' | 'latest' | 'name' | 'title' | 'date' | 'created' | 'createdAt' | 'bookingDate' | 'totalPrice';
   sortOrder?: 'asc' | 'desc';
+  search?: string;
+  q?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface ApiResponse<T> {
@@ -251,6 +264,7 @@ export interface ApiResponse<T> {
   page?: number;
   limit?: number;
   totalPages?: number;
+  count?: number;
 }
 
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {
@@ -301,16 +315,26 @@ export interface BookingFormData {
 export interface SearchParams {
   q?: string;
   destination?: string;
+  location?: string;
   category?: string;
   minPrice?: number;
   maxPrice?: number;
   duration?: string;
   date?: string;
+  dateFrom?: string;
+  dateTo?: string;
   rating?: number;
+  difficulty?: string;
+  status?: string;
+  bookingType?: string;
+  userId?: string;
   page?: number;
   limit?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
+  amenities?: string | string[];
+  tags?: string | string[];
 }
 
 // Form interfaces
@@ -329,6 +353,13 @@ export interface RegisterFormData {
   acceptTerms: boolean;
 }
 
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}
+
 export interface ContactFormData {
   name: string;
   email: string;
@@ -344,4 +375,89 @@ export interface NewsletterSubscription {
     guides: boolean;
     updates: boolean;
   };
+}
+
+// Filter-specific interfaces
+export interface FilterOption {
+  name: string;
+  value: string;
+  count?: number;
+  slug?: string;
+}
+
+export interface PriceRange {
+  min: number;
+  max: number;
+}
+
+export interface DateRange {
+  from?: string;
+  to?: string;
+}
+
+export interface SortOption {
+  value: string;
+  label: string;
+}
+
+// Car rental interface for consistency
+export interface CarRental {
+  _id: string;
+  name: string;
+  brand: string;
+  model: string;
+  year: number;
+  image: string;
+  images: string[];
+  pricePerDay: number;
+  originalPrice?: number;
+  transmission: 'Manual' | 'Automatic';
+  fuelType: 'Gasoline' | 'Diesel' | 'Hybrid';
+  seats: number;
+  features: string[];
+  rating: number;
+  reviewCount: number;
+  availability: boolean;
+  description: string;
+  location: string;
+  category: 'Economy' | 'Compact' | 'Mid-size' | 'Premium' | 'SUV';
+  isActive: boolean;
+  partnerId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Enhanced search and filter types
+export interface AdvancedSearchFilters extends SearchFilters {
+  // Additional filters for more complex searches
+  minRating?: number;
+  maxRating?: number;
+  minDuration?: number;
+  maxDuration?: number;
+  includeTags?: string[];
+  excludeTags?: string[];
+  nearbyAttractions?: string[];
+  facilitiesIncluded?: boolean;
+  hasAvailability?: boolean;
+  isPopular?: boolean;
+  isFeatured?: boolean;
+  partnerVerified?: boolean;
+  hasReviews?: boolean;
+  minReviews?: number;
+}
+
+// Filter state management
+export interface FilterState {
+  filters: SearchFilters;
+  isLoading: boolean;
+  results: any[];
+  totalResults: number;
+  currentPage: number;
+  totalPages: number;
+  error: string | null;
+}
+
+export interface FilterAction {
+  type: 'SET_FILTER' | 'CLEAR_FILTERS' | 'SET_RESULTS' | 'SET_LOADING' | 'SET_ERROR' | 'SET_PAGE';
+  payload?: any;
 }

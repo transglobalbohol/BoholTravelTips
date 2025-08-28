@@ -1,0 +1,12 @@
+# Apple Touch Icon Placeholder
+
+This directory needs an apple-touch-icon.png file (180x180 pixels).
+
+To create one:
+1. Open icon-generator.html in a browser
+2. Click "Download Apple Touch Icon" 
+3. Save the generated PNG file as apple-touch-icon.png
+
+Or use any 180x180 PNG image as your app icon.
+
+For now, update your index.html to remove the apple-touch-icon reference or create a proper PNG file.

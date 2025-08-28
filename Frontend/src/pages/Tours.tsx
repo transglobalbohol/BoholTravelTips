@@ -2,11 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Tour, SearchFilters } from '../types';
 import { Star, Clock, Users, MapPin, Filter } from 'lucide-react';
+import { tourService } from '../services/tourService';
 
 const Tours: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Array<{ name: string; slug: string; count: number }>>([]);
+  const [destinations, setDestinations] = useState<Array<{ name: string; slug: string; count: number }>>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
   const [filters, setFilters] = useState<SearchFilters>({
     destination: searchParams.get('destination') || '',
     category: searchParams.get('category') || '',
@@ -14,289 +22,142 @@ const Tours: React.FC = () => {
       min: parseInt(searchParams.get('minPrice') || '0'),
       max: parseInt(searchParams.get('maxPrice') || '10000'),
     },
-    sortBy: 'popularity',
+    rating: parseFloat(searchParams.get('rating') || '') || undefined,
+    sortBy: (searchParams.get('sortBy') as any) || 'popularity',
+    sortOrder: (searchParams.get('sortOrder') as any) || 'desc',
   });
 
-  // Enhanced mock tour data
-  const mockTours: Tour[] = [
-    {
-      _id: '1',
-      title: 'Chocolate Hills + Tarsier Sanctuary Day Tour',
-      slug: 'chocolate-hills-tarsier-day-tour',
-      description: 'Visit the famous Chocolate Hills and meet the adorable tarsiers in this comprehensive day tour. Experience the natural wonders of Bohol with expert guides.',
-      shortDescription: 'Famous geological formations and world\'s smallest primates',
-      category: { _id: '1', name: 'Nature & Wildlife', slug: 'nature-wildlife', description: '' },
-      price: 2500,
-      originalPrice: 3000,
-      duration: '8 hours',
-      location: 'Carmen, Bohol',
-      images: [
-        'https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['Transportation', 'Tour guide', 'Entrance fees', 'Lunch'],
-      exclusions: ['Personal expenses', 'Tips'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 15,
-      minGroupSize: 2,
-      difficulty: 'Easy',
-      rating: 4.8,
-      reviewCount: 324,
-      reviews: [],
-      partnerId: 'partner1',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: true,
-      tags: ['chocolate hills', 'tarsier', 'nature'],
-      cancellationPolicy: '24 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      _id: '2',
-      title: 'Panglao Island Hopping Adventure',
-      slug: 'panglao-island-hopping',
-      description: 'Explore pristine beaches and crystal-clear waters around Panglao Island. Snorkel in vibrant coral reefs and discover hidden lagoons.',
-      shortDescription: 'Beach paradise with crystal-clear waters',
-      category: { _id: '2', name: 'Beach & Water Sports', slug: 'beach-water-sports', description: '' },
-      price: 1800,
-      duration: '6 hours',
-      location: 'Panglao, Bohol',
-      images: [
-        'https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['Boat transfer', 'Snorkeling gear', 'Lunch', 'Island fees'],
-      exclusions: ['Drinks', 'Personal expenses'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 20,
-      minGroupSize: 4,
-      difficulty: 'Easy',
-      rating: 4.9,
-      reviewCount: 256,
-      reviews: [],
-      partnerId: 'partner2',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: true,
-      tags: ['island hopping', 'beach', 'snorkeling'],
-      cancellationPolicy: '24 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      _id: '3',
-      title: 'Loboc River Cruise with Lunch',
-      slug: 'loboc-river-cruise',
-      description: 'Enjoy a peaceful river cruise with traditional Filipino lunch and live entertainment. Experience the lush tropical scenery of Loboc River.',
-      shortDescription: 'Scenic river cruise with cultural entertainment',
-      category: { _id: '3', name: 'Cultural & Heritage', slug: 'cultural-heritage', description: '' },
-      price: 1200,
-      duration: '4 hours',
-      location: 'Loboc, Bohol',
-      images: [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['River cruise', 'Buffet lunch', 'Live entertainment', 'Round-trip transport'],
-      exclusions: ['Beverages', 'Tips for performers'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 50,
-      minGroupSize: 2,
-      difficulty: 'Easy',
-      rating: 4.7,
-      reviewCount: 189,
-      reviews: [],
-      partnerId: 'partner3',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: false,
-      tags: ['river cruise', 'cultural', 'dining'],
-      cancellationPolicy: '24 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      _id: '4',
-      title: 'Anda Hidden Beaches Tour',
-      slug: 'anda-hidden-beaches',
-      description: 'Discover the untouched beaches and pristine coastline of Anda municipality. Perfect for those seeking secluded paradise.',
-      shortDescription: 'Untouched white sand beaches and clear waters',
-      category: { _id: '2', name: 'Beach & Water Sports', slug: 'beach-water-sports', description: '' },
-      price: 2200,
-      duration: '10 hours',
-      location: 'Anda, Bohol',
-      images: [
-        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['Transportation', 'Beach access', 'Lunch', 'Local guide'],
-      exclusions: ['Water activities equipment', 'Personal expenses'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 12,
-      minGroupSize: 2,
-      difficulty: 'Moderate',
-      rating: 4.6,
-      reviewCount: 98,
-      reviews: [],
-      partnerId: 'partner4',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: false,
-      tags: ['hidden beaches', 'pristine', 'secluded'],
-      cancellationPolicy: '48 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      _id: '5',
-      title: 'Bohol Countryside Adventure',
-      slug: 'bohol-countryside-adventure',
-      description: 'Complete Bohol experience visiting Chocolate Hills, Blood Compact, Baclayon Church, and more in one comprehensive day tour.',
-      shortDescription: 'Complete Bohol highlights in one day',
-      category: { _id: '4', name: 'Day Trips', slug: 'day-trips', description: '' },
-      price: 2800,
-      originalPrice: 3200,
-      duration: '9 hours',
-      location: 'Various Locations',
-      images: [
-        'https://images.unsplash.com/photo-1558618644-fbd1e7647dad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['Air-conditioned van', 'Licensed tour guide', 'All entrance fees', 'Buffet lunch'],
-      exclusions: ['Personal expenses', 'Travel insurance'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 20,
-      minGroupSize: 2,
-      difficulty: 'Easy',
-      rating: 4.8,
-      reviewCount: 445,
-      reviews: [],
-      partnerId: 'partner5',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: true,
-      tags: ['countryside', 'cultural', 'comprehensive'],
-      cancellationPolicy: '24 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      _id: '6',
-      title: 'Firefly Watching & Dinner Tour',
-      slug: 'firefly-watching-dinner',
-      description: 'Magical evening tour watching thousands of fireflies along Abatan River followed by traditional Filipino dinner.',
-      shortDescription: 'Enchanting firefly experience with dinner',
-      category: { _id: '1', name: 'Nature & Wildlife', slug: 'nature-wildlife', description: '' },
-      price: 1500,
-      duration: '4 hours',
-      location: 'Cortes, Bohol',
-      images: [
-        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-      ],
-      inclusions: ['Boat ride', 'Dinner', 'Local guide', 'Transportation'],
-      exclusions: ['Drinks', 'Camera rental'],
-      itinerary: [],
-      availability: [new Date()],
-      maxGroupSize: 15,
-      minGroupSize: 2,
-      difficulty: 'Easy',
-      rating: 4.5,
-      reviewCount: 167,
-      reviews: [],
-      partnerId: 'partner6',
-      partner: {} as any,
-      isActive: true,
-      isFeatured: false,
-      tags: ['firefly', 'evening tour', 'nature'],
-      cancellationPolicy: '24 hours before',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-  ];
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
 
   useEffect(() => {
-    const fetchTours = async () => {
-      setLoading(true);
-      // Optimized filtering with reduced delay
-      let filteredTours = [...mockTours];
-        
-        // Apply filters
-        if (filters.destination && filters.destination !== 'All Destinations') {
-          filteredTours = filteredTours.filter(tour => 
-            tour.location.includes(filters.destination!) || 
-            tour.tags.some(tag => tag.toLowerCase().includes(filters.destination!.toLowerCase()))
-          );
-        }
-        
-        if (filters.category && filters.category !== 'All Categories') {
-          filteredTours = filteredTours.filter(tour => 
-            tour.category.name === filters.category
-          );
-        }
-        
-        if (filters.priceRange?.max) {
-          filteredTours = filteredTours.filter(tour => 
-            tour.price <= filters.priceRange!.max!
-          );
-        }
-        
-        // Apply sorting
-        if (filters.sortBy === 'price') {
-          filteredTours.sort((a, b) => a.price - b.price);
-        } else if (filters.sortBy === 'rating') {
-          filteredTours.sort((a, b) => b.rating - a.rating);
-        } else if (filters.sortBy === 'latest') {
-          filteredTours.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        }
-        
-      // Fast loading - minimal delay for smooth UX
-      setTimeout(() => {
-        setTours(filteredTours);
-        setLoading(false);
-      }, 150);
-    };
-
     fetchTours();
-  }, [filters]);
+  }, [filters, currentPage]);
 
-  const categories = [
-    'All Categories',
-    'Nature & Wildlife',
-    'Beach & Water Sports',
-    'Cultural & Heritage',
-    'Adventure',
-    'Food Tours',
-    'Day Trips'
-  ];
+  const fetchInitialData = async () => {
+    try {
+      const [categoriesResponse, destinationsResponse] = await Promise.all([
+        tourService.getCategories(),
+        tourService.getDestinations()
+      ]);
+      
+      setCategories(categoriesResponse.data);
+      setDestinations(destinationsResponse.data);
+    } catch (err) {
+      console.error('Error fetching initial data:', err);
+    }
+  };
 
-  const destinations = [
-    'All Destinations',
-    'Chocolate Hills',
-    'Panglao Island',
-    'Loboc River',
-    'Anda',
-    'Tagbilaran City',
-    'Baclayon',
-    'Tarsier Sanctuary'
-  ];
+  const fetchTours = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params: any = {
+        page: currentPage,
+        limit: 12,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+      };
+
+      if (filters.destination && filters.destination !== '') {
+        params.destination = filters.destination;
+      }
+
+      if (filters.category && filters.category !== '' && filters.category !== 'All Categories') {
+        params.category = filters.category;
+      }
+
+      if (filters.priceRange?.min && filters.priceRange.min > 0) {
+        params.minPrice = filters.priceRange.min;
+      }
+
+      if (filters.priceRange?.max && filters.priceRange.max < 50000) {
+        params.maxPrice = filters.priceRange.max;
+      }
+
+      if (filters.rating && filters.rating > 0) {
+        params.rating = filters.rating;
+      }
+
+      const response = await tourService.getTours(params);
+      
+      setTours(response.data);
+      setTotalResults(response.total || 0);
+      setTotalPages(response.totalPages || 0);
+    } catch (err) {
+      console.error('Error fetching tours:', err);
+      setError('Failed to fetch tours. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFilterChange = (key: keyof SearchFilters, value: any) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
+    setCurrentPage(1);
     
-    const params = new URLSearchParams(searchParams);
-    if (value && value !== 'All Categories' && value !== 'All Destinations') {
-      params.set(key, value.toString());
-    } else {
-      params.delete(key);
+    const params = new URLSearchParams();
+    
+    if (newFilters.destination && newFilters.destination !== '') {
+      params.set('destination', newFilters.destination);
     }
+    
+    if (newFilters.category && newFilters.category !== '' && newFilters.category !== 'All Categories') {
+      params.set('category', newFilters.category);
+    }
+    
+    if (newFilters.priceRange?.min && newFilters.priceRange.min > 0) {
+      params.set('minPrice', newFilters.priceRange.min.toString());
+    }
+    
+    if (newFilters.priceRange?.max && newFilters.priceRange.max < 50000) {
+      params.set('maxPrice', newFilters.priceRange.max.toString());
+    }
+    
+    if (newFilters.rating && newFilters.rating > 0) {
+      params.set('rating', newFilters.rating.toString());
+    }
+    
+    if (newFilters.sortBy) {
+      params.set('sortBy', newFilters.sortBy);
+    }
+    
+    if (newFilters.sortOrder) {
+      params.set('sortOrder', newFilters.sortOrder);
+    }
+    
     setSearchParams(params);
   };
 
+  const clearFilters = () => {
+    const newFilters: SearchFilters = { 
+      sortBy: 'popularity', 
+      sortOrder: 'desc',
+      priceRange: {
+        min: 0,
+        max: 10000
+      }
+    };
+    setFilters(newFilters);
+    setCurrentPage(1);
+    setSearchParams(new URLSearchParams());
+  };
+
+  const categoryOptions = [
+    { name: 'All Categories', value: '' },
+    ...categories.map(cat => ({ name: cat.name, value: cat.name }))
+  ];
+
+  const destinationOptions = [
+    { name: 'All Destinations', value: '' },
+    ...destinations.map(dest => ({ name: dest.name, value: dest.name }))
+  ];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="bg-white border-b border-border">
         <div className="container py-8">
           <h1 className="text-heading-1 mb-4">
@@ -311,7 +172,6 @@ const Tours: React.FC = () => {
 
       <div className="container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
           <div className="lg:w-1/4">
             <div className="card p-6 sticky top-24">
               <div className="flex items-center space-x-2 mb-6">
@@ -319,71 +179,93 @@ const Tours: React.FC = () => {
                 <h3 className="text-heading-3 text-lg">Filter Tours</h3>
               </div>
               
-              {/* Destination Filter */}
               <div className="form-group mb-6">
-                <label className="form-label">
-                  Destination
-                </label>
+                <label className="form-label">Destination</label>
                 <select
                   value={filters.destination || ''}
                   onChange={(e) => handleFilterChange('destination', e.target.value)}
                   className="input"
                 >
-                  {destinations.map((dest) => (
-                    <option key={dest} value={dest === 'All Destinations' ? '' : dest}>
-                      {dest}
+                  {destinationOptions.map((dest) => (
+                    <option key={dest.value} value={dest.value}>
+                      {dest.name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Category Filter */}
               <div className="form-group mb-6">
-                <label className="form-label">
-                  Category
-                </label>
+                <label className="form-label">Category</label>
                 <select
                   value={filters.category || ''}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
                   className="input"
                 >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat === 'All Categories' ? '' : cat}>
-                      {cat}
+                  {categoryOptions.map((cat) => (
+                    <option key={cat.value} value={cat.value}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Price Range */}
               <div className="form-group mb-6">
-                <label className="form-label">
-                  Price Range (₱)
-                </label>
-                <div className="space-y-3">
-                  <input
-                    type="range"
-                    min="0"
-                    max="10000"
-                    value={filters.priceRange?.max || 10000}
-                    onChange={(e) => handleFilterChange('priceRange', { 
-                      ...filters.priceRange, 
-                      max: parseInt(e.target.value) 
-                    })}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-small">
+                <label className="form-label">Price Range (₱)</label>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Minimum: ₱{filters.priceRange?.min?.toLocaleString() || '0'}</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10000"
+                      step="500"
+                      value={filters.priceRange?.min || 0}
+                      onChange={(e) => handleFilterChange('priceRange', { 
+                        ...filters.priceRange, 
+                        min: parseInt(e.target.value) 
+                      })}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Maximum: ₱{filters.priceRange?.max?.toLocaleString() || '10,000'}</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10000"
+                      step="500"
+                      value={filters.priceRange?.max || 10000}
+                      onChange={(e) => handleFilterChange('priceRange', { 
+                        ...filters.priceRange, 
+                        max: parseInt(e.target.value) 
+                      })}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex justify-between text-small text-gray-500">
                     <span>₱0</span>
-                    <span className="font-medium">₱{filters.priceRange?.max?.toLocaleString() || '10,000'}</span>
+                    <span>₱10,000+</span>
                   </div>
                 </div>
               </div>
 
-              {/* Sort By */}
+              <div className="form-group mb-6">
+                <label className="form-label">Minimum Rating</label>
+                <select
+                  value={filters.rating || ''}
+                  onChange={(e) => handleFilterChange('rating', e.target.value ? parseFloat(e.target.value) : undefined)}
+                  className="input"
+                >
+                  <option value="">Any Rating</option>
+                  <option value="3">3+ Stars</option>
+                  <option value="4">4+ Stars</option>
+                  <option value="4.5">4.5+ Stars</option>
+                  <option value="5">5 Stars</option>
+                </select>
+              </div>
+
               <div className="form-group">
-                <label className="form-label">
-                  Sort By
-                </label>
+                <label className="form-label">Sort By</label>
                 <select
                   value={filters.sortBy || 'popularity'}
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
@@ -393,21 +275,46 @@ const Tours: React.FC = () => {
                   <option value="price">Price: Low to High</option>
                   <option value="rating">Highest Rated</option>
                   <option value="latest">Latest</option>
+                  <option value="title">Title A-Z</option>
                 </select>
               </div>
+
+              <button
+                onClick={clearFilters}
+                className="w-full mt-6 text-primary hover:text-primary-dark text-sm border border-primary hover:bg-primary hover:text-white transition-colors rounded-lg px-4 py-2"
+              >
+                Clear All Filters
+              </button>
             </div>
           </div>
 
-          {/* Tours Grid */}
           <div className="lg:w-3/4">
-            {/* Results Info */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-body">
-                {loading ? 'Loading tours...' : `${tours.length} tour${tours.length !== 1 ? 's' : ''} found`}
+                {loading ? 'Loading tours...' : `${totalResults} tour${totalResults !== 1 ? 's' : ''} found`}
               </p>
+              {totalResults > 0 && !loading && (
+                <button
+                  onClick={clearFilters}
+                  className="text-primary hover:text-primary-dark text-sm"
+                >
+                  Clear Filters
+                </button>
+              )}
             </div>
 
-            {/* Tours Loading */}
+            {error && (
+              <div className="card p-6 mb-6 border-red-200 bg-red-50">
+                <p className="text-red-600">{error}</p>
+                <button
+                  onClick={() => fetchTours()}
+                  className="btn-primary mt-3"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
             {loading && (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
@@ -423,8 +330,7 @@ const Tours: React.FC = () => {
               </div>
             )}
 
-            {/* Tours Grid */}
-            {!loading && (
+            {!loading && tours.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {tours.map((tour) => (
                   <Link
@@ -453,7 +359,7 @@ const Tours: React.FC = () => {
                     
                     <div className="p-6">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="badge text-xs">{tour.category.name}</span>
+                        <span className="badge text-xs">{tour.category}</span>
                         <div className="flex items-center space-x-1 text-small text-gray-500">
                           <Clock className="w-3 h-3" />
                           <span>{tour.duration}</span>
@@ -514,22 +420,56 @@ const Tours: React.FC = () => {
               </div>
             )}
 
-            {/* No Results */}
-            {!loading && tours.length === 0 && (
+            {!loading && tours.length === 0 && !error && (
               <div className="card p-12 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Filter className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-heading-3 text-lg mb-2">No tours found</h3>
                 <p className="text-body mb-6">Try adjusting your filters to see more results.</p>
-                <button
-                  onClick={() => {
-                    setFilters({ sortBy: 'popularity' });
-                    setSearchParams(new URLSearchParams());
-                  }}
-                  className="btn-primary"
-                >
+                <button onClick={clearFilters} className="btn-primary">
                   Clear Filters
+                </button>
+              </div>
+            )}
+
+            {totalPages > 1 && !loading && (
+              <div className="flex justify-center mt-8 space-x-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                
+                <div className="flex space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const page = i + Math.max(1, currentPage - 2);
+                    if (page > totalPages) return null;
+                    
+                    return (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-2 rounded ${
+                          page === currentPage
+                            ? 'bg-primary text-white'
+                            : 'bg-white border border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
                 </button>
               </div>
             )}

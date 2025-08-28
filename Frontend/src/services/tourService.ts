@@ -5,7 +5,24 @@ export const tourService = {
   // Get all tours with optional filters
   getTours: async (params?: SearchParams): Promise<PaginatedResponse<Tour>> => {
     const response = await apiClient.get('/tours', { params });
-    return response.data;
+    
+    // Handle both old and new response formats
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      // Convert old format to new format
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 12,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
   // Get featured tours
@@ -30,19 +47,64 @@ export const tourService = {
   searchTours: async (query: string, filters?: SearchParams): Promise<PaginatedResponse<Tour>> => {
     const params = { q: query, ...filters };
     const response = await apiClient.get('/tours/search', { params });
-    return response.data;
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 12,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
   // Get tours by category
   getToursByCategory: async (category: string, params?: SearchParams): Promise<PaginatedResponse<Tour>> => {
     const response = await apiClient.get(`/tours/category/${category}`, { params });
-    return response.data;
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 12,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
   // Get tours by destination
   getToursByDestination: async (destination: string, params?: SearchParams): Promise<PaginatedResponse<Tour>> => {
     const response = await apiClient.get(`/tours/destination/${destination}`, { params });
-    return response.data;
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 12,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
   // Get tour categories
@@ -121,7 +183,22 @@ export const tourService = {
     const response = await apiClient.get(`/tours/${tourId}/reviews`, {
       params: { page, limit }
     });
-    return response.data;
+    
+    if (response.data.pagination) {
+      return response.data;
+    } else {
+      return {
+        ...response.data,
+        pagination: {
+          page: response.data.page || 1,
+          limit: response.data.limit || 10,
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
+          hasNextPage: response.data.hasNextPage || false,
+          hasPrevPage: response.data.hasPrevPage || false
+        }
+      };
+    }
   },
 
   // Mark review as helpful
