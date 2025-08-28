@@ -68,10 +68,13 @@ const HeroSection: React.FC = () => {
               </div>
               
               {/* Search Button */}
-              <div className="flex items-end">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  &nbsp;
+                </label>
                 <Link 
                   to="/tours"
-                  className="btn-primary w-full flex items-center justify-center space-x-2"
+                  className="btn-primary w-full h-12 flex items-center justify-center space-x-2"
                 >
                   <Search className="w-4 h-4" />
                   <span>Search Tours</span>
