@@ -5,47 +5,55 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.75rem;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
+    --header-height: 56px; /* Header height for consistent spacing */
+  }
+
+  /* Responsive header height for mobile */
+  @media (max-width: 768px) {
+    :root {
+      --header-height: 60px; /* Slightly taller on mobile for touch targets */
+    }
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
   }
 }
 
@@ -55,29 +63,43 @@
   }
   
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: rgb(249, 250, 251);
+    min-height: 100vh;
+    /* Prevent scroll position restoration on page reload */
+    overscroll-behavior: none;
   }
   
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height); /* Use CSS variable for consistent spacing */
   }
 }
 
 @layer components {
+  /* Modern Button Styles */
   .btn-primary {
-    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2;
   }
   
   .btn-secondary {
-    @apply bg-secondary-500 hover:bg-secondary-600 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200;
+    @apply bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
   }
   
   .btn-outline {
-    @apply border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors duration-200;
+    @apply border border-gray-900 hover:bg-gray-900 hover:text-white text-gray-900 font-medium py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2;
   }
   
+  .btn-ghost {
+    @apply text-gray-700 hover:bg-gray-100 font-medium py-3 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2;
+  }
+
+  /* Layout Components */
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -86,52 +108,212 @@
     @apply py-16 lg:py-24;
   }
 
+  /* Modern Card Styles */
   .card {
-    @apply bg-card text-card-foreground rounded-lg border border-border shadow-sm;
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
   }
 
+  .card-interactive {
+    @apply bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer;
+  }
+
+  .card-feature {
+    @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  /* Modern Input Styles */
   .input {
-    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-12 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 focus-visible:border-gray-900 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200;
+  }
+
+  .input-large {
+    @apply h-14 px-6 py-4 text-base;
+  }
+
+  /* Modern Text Styles */
+  .text-heading-1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight;
+  }
+
+  .text-heading-2 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight;
+  }
+
+  .text-heading-3 {
+    @apply text-2xl md:text-3xl font-bold text-gray-900 leading-tight;
+  }
+
+  .text-subheading {
+    @apply text-lg md:text-xl text-gray-600 leading-relaxed;
+  }
+
+  .text-body {
+    @apply text-base text-gray-600 leading-relaxed;
+  }
+
+  .text-body-large {
+    @apply text-lg text-gray-600 leading-relaxed;
+  }
+
+  .text-small {
+    @apply text-sm text-gray-500;
+  }
+
+  /* Modern Badge Styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800;
+  }
+
+  .badge-primary {
+    @apply bg-gray-900 text-white;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Modern Navigation Styles */
+  .nav-link {
+    @apply text-gray-600 hover:text-gray-900 font-medium transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-gray-900 font-semibold;
+  }
+
+  /* Modern Hero Section */
+  .hero-modern {
+    @apply bg-gradient-to-b from-gray-50 to-white relative;
+  }
+
+  .hero-content {
+    @apply relative z-10 max-w-4xl mx-auto text-center;
+  }
+
+  /* Modern Feature Grid */
+  .feature-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .feature-card {
+    @apply bg-white border border-gray-200 rounded-xl p-6 text-center hover:shadow-md transition-all duration-200;
+  }
+
+  .feature-icon {
+    @apply w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4;
+  }
+
+  /* Modern Form Styles */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .form-error {
+    @apply text-sm text-red-600;
+  }
+
+  .form-help {
+    @apply text-sm text-gray-500;
+  }
+
+  /* Modern Search Styles */
+  .search-container {
+    @apply bg-white border border-gray-300 rounded-xl shadow-sm overflow-hidden;
+  }
+
+  .search-input {
+    @apply border-0 focus:ring-0 bg-transparent;
+  }
+
+  /* Modern Testimonial Styles */
+  .testimonial-card {
+    @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm;
+  }
+
+  .testimonial-quote {
+    @apply text-gray-600 mb-4 italic;
+  }
+
+  .testimonial-author {
+    @apply flex items-center space-x-3;
+  }
+
+  .testimonial-avatar {
+    @apply w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center;
+  }
+
+  /* Modern Footer Styles */
+  .footer-modern {
+    @apply bg-gray-900 text-white;
+  }
+
+  .footer-link {
+    @apply text-gray-300 hover:text-white transition-colors duration-200;
+  }
+
+  /* Utility Classes */
+  .header-spacing {
+    padding-top: var(--header-height);
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20;
+  }
+
+  .subtle-shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  }
+
+  .elevated-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2;
+  }
+
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  .loading-dot {
+    @apply w-2 h-2 bg-gray-400 rounded-full animate-bounce;
   }
 }
 
-/* Tourism-specific styles */
-.hero-gradient {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #0f172a 100%);
-}
-
-.card-shadow {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.card-hover {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Custom scrollbar */
+/* Modern scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: #94a3b8;
 }
 
-/* Loading animations */
+/* Modern animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -143,19 +325,85 @@
   }
 }
 
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .fade-in {
   animation: fadeIn 0.6s ease-out;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+.slide-in {
+  animation: slideIn 0.6s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+/* Modern responsive text sizing */
+@media (max-width: 640px) {
+  .text-heading-1 {
+    @apply text-3xl;
   }
-  50% {
-    opacity: 0.5;
+  
+  .text-heading-2 {
+    @apply text-2xl;
+  }
+  
+  .section-padding {
+    @apply py-12;
   }
 }
 
-.pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Modern focus states for accessibility */
+*:focus-visible {
+  @apply outline-none ring-2 ring-gray-900 ring-offset-2;
+}
+
+/* Modern link hover effects */
+.modern-link {
+  @apply text-gray-900 hover:text-gray-600 transition-colors duration-200;
+}
+
+/* Print styles */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .card {
+    @apply border-2 border-gray-900;
+  }
+  
+  .btn-primary {
+    @apply bg-black text-white;
+  }
 }

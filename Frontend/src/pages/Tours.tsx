@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Tour, SearchFilters } from '../types';
+import { Star, Clock, Users, MapPin, Filter } from 'lucide-react';
 
 const Tours: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,7 +17,7 @@ const Tours: React.FC = () => {
     sortBy: 'popularity',
   });
 
-  // Mock tour data - replace with API call
+  // Enhanced mock tour data
   const mockTours: Tour[] = [
     {
       _id: '1',
@@ -83,18 +84,177 @@ const Tours: React.FC = () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
-    // Add more mock tours as needed...
+    {
+      _id: '3',
+      title: 'Loboc River Cruise with Lunch',
+      slug: 'loboc-river-cruise',
+      description: 'Enjoy a peaceful river cruise with traditional Filipino lunch and live entertainment. Experience the lush tropical scenery of Loboc River.',
+      shortDescription: 'Scenic river cruise with cultural entertainment',
+      category: { _id: '3', name: 'Cultural & Heritage', slug: 'cultural-heritage', description: '' },
+      price: 1200,
+      duration: '4 hours',
+      location: 'Loboc, Bohol',
+      images: [
+        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      ],
+      inclusions: ['River cruise', 'Buffet lunch', 'Live entertainment', 'Round-trip transport'],
+      exclusions: ['Beverages', 'Tips for performers'],
+      itinerary: [],
+      availability: [new Date()],
+      maxGroupSize: 50,
+      minGroupSize: 2,
+      difficulty: 'Easy',
+      rating: 4.7,
+      reviewCount: 189,
+      reviews: [],
+      partnerId: 'partner3',
+      partner: {} as any,
+      isActive: true,
+      isFeatured: false,
+      tags: ['river cruise', 'cultural', 'dining'],
+      cancellationPolicy: '24 hours before',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '4',
+      title: 'Anda Hidden Beaches Tour',
+      slug: 'anda-hidden-beaches',
+      description: 'Discover the untouched beaches and pristine coastline of Anda municipality. Perfect for those seeking secluded paradise.',
+      shortDescription: 'Untouched white sand beaches and clear waters',
+      category: { _id: '2', name: 'Beach & Water Sports', slug: 'beach-water-sports', description: '' },
+      price: 2200,
+      duration: '10 hours',
+      location: 'Anda, Bohol',
+      images: [
+        'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      ],
+      inclusions: ['Transportation', 'Beach access', 'Lunch', 'Local guide'],
+      exclusions: ['Water activities equipment', 'Personal expenses'],
+      itinerary: [],
+      availability: [new Date()],
+      maxGroupSize: 12,
+      minGroupSize: 2,
+      difficulty: 'Moderate',
+      rating: 4.6,
+      reviewCount: 98,
+      reviews: [],
+      partnerId: 'partner4',
+      partner: {} as any,
+      isActive: true,
+      isFeatured: false,
+      tags: ['hidden beaches', 'pristine', 'secluded'],
+      cancellationPolicy: '48 hours before',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '5',
+      title: 'Bohol Countryside Adventure',
+      slug: 'bohol-countryside-adventure',
+      description: 'Complete Bohol experience visiting Chocolate Hills, Blood Compact, Baclayon Church, and more in one comprehensive day tour.',
+      shortDescription: 'Complete Bohol highlights in one day',
+      category: { _id: '4', name: 'Day Trips', slug: 'day-trips', description: '' },
+      price: 2800,
+      originalPrice: 3200,
+      duration: '9 hours',
+      location: 'Various Locations',
+      images: [
+        'https://images.unsplash.com/photo-1558618644-fbd1e7647dad?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      ],
+      inclusions: ['Air-conditioned van', 'Licensed tour guide', 'All entrance fees', 'Buffet lunch'],
+      exclusions: ['Personal expenses', 'Travel insurance'],
+      itinerary: [],
+      availability: [new Date()],
+      maxGroupSize: 20,
+      minGroupSize: 2,
+      difficulty: 'Easy',
+      rating: 4.8,
+      reviewCount: 445,
+      reviews: [],
+      partnerId: 'partner5',
+      partner: {} as any,
+      isActive: true,
+      isFeatured: true,
+      tags: ['countryside', 'cultural', 'comprehensive'],
+      cancellationPolicy: '24 hours before',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '6',
+      title: 'Firefly Watching & Dinner Tour',
+      slug: 'firefly-watching-dinner',
+      description: 'Magical evening tour watching thousands of fireflies along Abatan River followed by traditional Filipino dinner.',
+      shortDescription: 'Enchanting firefly experience with dinner',
+      category: { _id: '1', name: 'Nature & Wildlife', slug: 'nature-wildlife', description: '' },
+      price: 1500,
+      duration: '4 hours',
+      location: 'Cortes, Bohol',
+      images: [
+        'https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      ],
+      inclusions: ['Boat ride', 'Dinner', 'Local guide', 'Transportation'],
+      exclusions: ['Drinks', 'Camera rental'],
+      itinerary: [],
+      availability: [new Date()],
+      maxGroupSize: 15,
+      minGroupSize: 2,
+      difficulty: 'Easy',
+      rating: 4.5,
+      reviewCount: 167,
+      reviews: [],
+      partnerId: 'partner6',
+      partner: {} as any,
+      isActive: true,
+      isFeatured: false,
+      tags: ['firefly', 'evening tour', 'nature'],
+      cancellationPolicy: '24 hours before',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
   ];
 
   useEffect(() => {
-    // Simulate API call
     const fetchTours = async () => {
       setLoading(true);
-      // Replace with actual API call
+      // Optimized filtering with reduced delay
+      let filteredTours = [...mockTours];
+        
+        // Apply filters
+        if (filters.destination && filters.destination !== 'All Destinations') {
+          filteredTours = filteredTours.filter(tour => 
+            tour.location.includes(filters.destination!) || 
+            tour.tags.some(tag => tag.toLowerCase().includes(filters.destination!.toLowerCase()))
+          );
+        }
+        
+        if (filters.category && filters.category !== 'All Categories') {
+          filteredTours = filteredTours.filter(tour => 
+            tour.category.name === filters.category
+          );
+        }
+        
+        if (filters.priceRange?.max) {
+          filteredTours = filteredTours.filter(tour => 
+            tour.price <= filters.priceRange!.max!
+          );
+        }
+        
+        // Apply sorting
+        if (filters.sortBy === 'price') {
+          filteredTours.sort((a, b) => a.price - b.price);
+        } else if (filters.sortBy === 'rating') {
+          filteredTours.sort((a, b) => b.rating - a.rating);
+        } else if (filters.sortBy === 'latest') {
+          filteredTours.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        
+      // Fast loading - minimal delay for smooth UX
       setTimeout(() => {
-        setTours(mockTours);
+        setTours(filteredTours);
         setLoading(false);
-      }, 1000);
+      }, 150);
     };
 
     fetchTours();
@@ -125,9 +285,8 @@ const Tours: React.FC = () => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     
-    // Update URL params
     const params = new URLSearchParams(searchParams);
-    if (value) {
+    if (value && value !== 'All Categories' && value !== 'All Destinations') {
       params.set(key, value.toString());
     } else {
       params.delete(key);
@@ -136,36 +295,39 @@ const Tours: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <div className="bg-white border-b border-border">
+        <div className="container py-8">
+          <h1 className="text-heading-1 mb-4">
             Tours & Activities in Bohol
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl">
+          <p className="text-subheading max-w-3xl">
             Discover amazing tours and activities across the beautiful island of Bohol. 
             From the iconic Chocolate Hills to pristine beaches, find your perfect adventure.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-1/4">
-            <div className="bg-white rounded-lg shadow-sm border p-6 sticky top-8">
-              <h3 className="text-lg font-semibold mb-4">Filter Tours</h3>
+            <div className="card p-6 sticky top-24">
+              <div className="flex items-center space-x-2 mb-6">
+                <Filter className="w-5 h-5 text-gray-600" />
+                <h3 className="text-heading-3 text-lg">Filter Tours</h3>
+              </div>
               
               {/* Destination Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Destination
                 </label>
                 <select
                   value={filters.destination || ''}
                   onChange={(e) => handleFilterChange('destination', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   {destinations.map((dest) => (
                     <option key={dest} value={dest === 'All Destinations' ? '' : dest}>
@@ -176,14 +338,14 @@ const Tours: React.FC = () => {
               </div>
 
               {/* Category Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Category
                 </label>
                 <select
                   value={filters.category || ''}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat === 'All Categories' ? '' : cat}>
@@ -194,40 +356,38 @@ const Tours: React.FC = () => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Price Range (₱)
                 </label>
                 <div className="space-y-3">
-                  <div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="10000"
-                      value={filters.priceRange?.max || 10000}
-                      onChange={(e) => handleFilterChange('priceRange', { 
-                        ...filters.priceRange, 
-                        max: parseInt(e.target.value) 
-                      })}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>₱0</span>
-                      <span>₱{filters.priceRange?.max?.toLocaleString() || '10,000'}</span>
-                    </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="10000"
+                    value={filters.priceRange?.max || 10000}
+                    onChange={(e) => handleFilterChange('priceRange', { 
+                      ...filters.priceRange, 
+                      max: parseInt(e.target.value) 
+                    })}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <div className="flex justify-between text-small">
+                    <span>₱0</span>
+                    <span className="font-medium">₱{filters.priceRange?.max?.toLocaleString() || '10,000'}</span>
                   </div>
                 </div>
               </div>
 
               {/* Sort By */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group">
+                <label className="form-label">
                   Sort By
                 </label>
                 <select
                   value={filters.sortBy || 'popularity'}
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   <option value="popularity">Most Popular</option>
                   <option value="price">Price: Low to High</option>
@@ -242,30 +402,17 @@ const Tours: React.FC = () => {
           <div className="lg:w-3/4">
             {/* Results Info */}
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-600">
-                {loading ? 'Loading...' : `${tours.length} tours found`}
+              <p className="text-body">
+                {loading ? 'Loading tours...' : `${tours.length} tour${tours.length !== 1 ? 's' : ''} found`}
               </p>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">View:</span>
-                <button className="p-2 bg-blue-100 text-blue-600 rounded">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                </button>
-                <button className="p-2 text-gray-400 hover:text-gray-600 rounded">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
             </div>
 
             {/* Tours Loading */}
             {loading && (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg shadow-sm border animate-pulse">
-                    <div className="h-48 bg-gray-200 rounded-t-lg"></div>
+                  <div key={i} className="card animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-t-xl"></div>
                     <div className="p-6">
                       <div className="h-4 bg-gray-200 rounded w-3/4 mb-3"></div>
                       <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
@@ -283,37 +430,46 @@ const Tours: React.FC = () => {
                   <Link
                     key={tour._id}
                     to={`/tours/${tour._id}`}
-                    className="bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 border overflow-hidden card-hover"
+                    className="card-interactive overflow-hidden"
                   >
                     <div className="relative">
                       <img
                         src={tour.images[0]}
                         alt={tour.title}
                         className="w-full h-48 object-cover"
+                        loading="lazy"
                       />
                       {tour.isFeatured && (
-                        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-md text-sm font-medium">
+                        <div className="absolute top-3 left-3 badge badge-primary">
                           Featured
                         </div>
                       )}
                       {tour.originalPrice && (
-                        <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-bold">
+                        <div className="absolute top-3 right-3 badge badge-error">
                           -{Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)}%
                         </div>
                       )}
                     </div>
                     
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-blue-600 font-medium">{tour.category.name}</span>
-                        <span className="text-sm text-gray-500">{tour.duration}</span>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="badge text-xs">{tour.category.name}</span>
+                        <div className="flex items-center space-x-1 text-small text-gray-500">
+                          <Clock className="w-3 h-3" />
+                          <span>{tour.duration}</span>
+                        </div>
                       </div>
                       
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                      <h3 className="text-heading-3 text-lg mb-2 line-clamp-2">
                         {tour.title}
                       </h3>
                       
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      <div className="flex items-center space-x-1 mb-3">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span className="text-small text-gray-500">{tour.location}</span>
+                      </div>
+                      
+                      <p className="text-body text-sm mb-4 line-clamp-2">
                         {tour.shortDescription}
                       </p>
                       
@@ -321,28 +477,28 @@ const Tours: React.FC = () => {
                         <div className="flex items-center space-x-1">
                           <div className="flex space-x-1">
                             {[...Array(5)].map((_, i) => (
-                              <svg
+                              <Star
                                 key={i}
                                 className={`w-4 h-4 ${
-                                  i < Math.floor(tour.rating) ? 'text-yellow-400' : 'text-gray-300'
+                                  i < Math.floor(tour.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
                                 }`}
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
+                              />
                             ))}
                           </div>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-small text-gray-600">
                             {tour.rating} ({tour.reviewCount})
                           </span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-small text-gray-500">
+                          <Users className="w-3 h-3" />
+                          <span>Max {tour.maxGroupSize}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-baseline space-x-2">
                           {tour.originalPrice && (
-                            <span className="text-sm text-gray-500 line-through">
+                            <span className="text-small text-gray-500 line-through">
                               ₱{tour.originalPrice.toLocaleString()}
                             </span>
                           )}
@@ -350,7 +506,7 @@ const Tours: React.FC = () => {
                             ₱{tour.price.toLocaleString()}
                           </span>
                         </div>
-                        <span className="text-sm text-gray-500">per person</span>
+                        <span className="text-small text-gray-500">per person</span>
                       </div>
                     </div>
                   </Link>
@@ -360,18 +516,18 @@ const Tours: React.FC = () => {
 
             {/* No Results */}
             {!loading && tours.length === 0 && (
-              <div className="text-center py-12">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No tours found</h3>
-                <p className="mt-2 text-gray-500">Try adjusting your filters to see more results.</p>
+              <div className="card p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Filter className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-heading-3 text-lg mb-2">No tours found</h3>
+                <p className="text-body mb-6">Try adjusting your filters to see more results.</p>
                 <button
                   onClick={() => {
                     setFilters({ sortBy: 'popularity' });
                     setSearchParams(new URLSearchParams());
                   }}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                  className="btn-primary"
                 >
                   Clear Filters
                 </button>

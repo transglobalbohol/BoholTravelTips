@@ -1,35 +1,36 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Search, ChevronDown } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
     <section 
-      className="relative h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      className="relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1544986581-efac024faf62?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
       }}
     >
-      <div className="container mx-auto px-4 text-center text-white">
-        <div className="max-w-4xl mx-auto">
+      <div className="container px-4">
+        <div className="hero-content text-white">
           {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Guide to Bohol and Beyond: Everything You Need to Know
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            Bohol Travel Tips: Your Ultimate Guide
           </h1>
           
           {/* Subheading */}
-          <p className="text-xl md:text-2xl mb-8 text-gray-200">
+          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto text-gray-200 leading-relaxed">
             Find everything you need to know about Bohol. Learn about the best time to visit, where to go, sample itinerary and travel tips.
           </p>
           
           {/* Search Form */}
-          <div className="bg-white rounded-lg p-6 shadow-2xl max-w-4xl mx-auto mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl max-w-4xl mx-auto mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6">
               {/* Destination Select */}
-              <div className="relative">
-                <label className="block text-gray-700 text-sm font-medium mb-2 text-left">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select destination
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-gray-700 bg-white">
                   <option value="">Choose destination</option>
                   <option value="chocolate-hills">Chocolate Hills</option>
                   <option value="panglao">Panglao Island</option>
@@ -42,22 +43,22 @@ const HeroSection: React.FC = () => {
               </div>
               
               {/* Check-in Date */}
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2 text-left">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select dates
                 </label>
                 <input
                   type="date"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-gray-700 bg-white"
                 />
               </div>
               
               {/* Travelers */}
-              <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2 text-left">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Add travelers
                 </label>
-                <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 text-gray-700 bg-white">
                   <option value="1">1 Traveler</option>
                   <option value="2">2 Travelers</option>
                   <option value="3">3 Travelers</option>
@@ -70,26 +71,27 @@ const HeroSection: React.FC = () => {
               <div className="flex items-end">
                 <Link 
                   to="/tours"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 text-center"
+                  className="btn-primary w-full flex items-center justify-center space-x-2"
                 >
-                  Search Tours
+                  <Search className="w-4 h-4" />
+                  <span>Search Tours</span>
                 </Link>
               </div>
             </div>
           </div>
           
           {/* Quick Links */}
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <Link to="/tours" className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full transition duration-200">
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link to="/tours" className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20">
               Popular Tours
             </Link>
-            <Link to="/hotels" className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full transition duration-200">
+            <Link to="/hotels" className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20">
               Best Hotels
             </Link>
-            <Link to="/destinations" className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full transition duration-200">
+            <Link to="/destinations" className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20">
               Top Destinations
             </Link>
-            <Link to="/travel-guides" className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full transition duration-200">
+            <Link to="/travel-guides" className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 border border-white/20">
               Travel Guides
             </Link>
           </div>
@@ -98,9 +100,7 @@ const HeroSection: React.FC = () => {
       
       {/* Scroll Down Arrow */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+        <ChevronDown className="w-6 h-6 text-white/70" />
       </div>
     </section>
   );

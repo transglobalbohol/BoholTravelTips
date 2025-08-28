@@ -1,240 +1,293 @@
 import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    subject: '',
-    message: '',
+    subject: 'General Inquiry',
+    message: ''
   });
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     
-    // Simulate form submission
+    // Simulate API call
     setTimeout(() => {
-      setSent(true);
-      setLoading(false);
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    }, 1000);
+      setIsSubmitted(true);
+      setIsLoading(false);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: 'General Inquiry',
+        message: ''
+      });
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+      }, 5000);
+    }, 1500);
   };
 
+  const contactInfo = [
+    {
+      icon: <Phone className="w-5 h-5" />,
+      title: 'Phone',
+      details: ['+63 123 456 7890', '+63 987 654 3210'],
+      description: 'Call us for immediate assistance'
+    },
+    {
+      icon: <Mail className="w-5 h-5" />,
+      title: 'Email',
+      details: ['hello@bohol-travel-tips.com', 'support@bohol-travel-tips.com'],
+      description: 'Send us an email anytime'
+    },
+    {
+      icon: <MapPin className="w-5 h-5" />,
+      title: 'Office',
+      details: ['123 Tourism Street', 'Tagbilaran City, Bohol 6300'],
+      description: 'Visit our local office'
+    },
+    {
+      icon: <Clock className="w-5 h-5" />,
+      title: 'Hours',
+      details: ['Monday - Friday: 8:00 AM - 6:00 PM', 'Saturday: 9:00 AM - 3:00 PM'],
+      description: 'Our business hours (PHT)'
+    }
+  ];
+
+  const subjects = [
+    'General Inquiry',
+    'Tour Booking',
+    'Hotel Reservation',
+    'Car Rental',
+    'Travel Planning',
+    'Complaint/Feedback',
+    'Partnership',
+    'Other'
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="bg-white border-b border-border">
+        <div className="container py-8">
+          <h1 className="text-heading-1 mb-4">
             Contact Us
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl">
-            Have questions about your Bohol trip? We're here to help you plan the perfect adventure.
+          <p className="text-subheading max-w-2xl">
+            We're here to help you plan the perfect Bohol adventure. Get in touch with our local experts.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container py-16">
         <div className="max-w-6xl mx-auto">
+          {/* Contact Information Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {contactInfo.map((info, index) => (
+              <div key={index} className="card p-6 text-center">
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-600">
+                  {info.icon}
+                </div>
+                <h3 className="text-heading-3 text-lg mb-2">{info.title}</h3>
+                <div className="space-y-1 mb-3">
+                  {info.details.map((detail, detailIndex) => (
+                    <p key={detailIndex} className="text-body text-sm font-medium text-gray-900">
+                      {detail}
+                    </p>
+                  ))}
+                </div>
+                <p className="text-small text-gray-500">{info.description}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <div className="bg-white rounded-lg shadow-sm border p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a message</h2>
+            <div className="card p-8">
+              <h2 className="text-heading-2 text-2xl mb-6">Send us a Message</h2>
               
-              {sent && (
-                <div className="mb-6 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
-                  Thank you for your message! We'll get back to you within 24 hours.
+              {isSubmitted ? (
+                <div className="card bg-green-50 border-green-200 p-6 text-center">
+                  <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
+                  <h3 className="text-heading-3 text-lg text-green-800 mb-2">Message Sent Successfully!</h3>
+                  <p className="text-body text-green-700">
+                    Thank you for contacting us. We'll get back to you within 24 hours.
+                  </p>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label htmlFor="name" className="form-label">Full Name *</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="input"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email" className="form-label">Email Address *</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="input"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="form-group">
+                      <label htmlFor="phone" className="form-label">Phone Number</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="input"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="subject" className="form-label">Subject *</label>
+                      <select
+                        id="subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleInputChange}
+                        className="input"
+                        required
+                      >
+                        {subjects.map((subject) => (
+                          <option key={subject} value={subject}>
+                            {subject}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="message" className="form-label">Message *</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows={6}
+                      className="input resize-none"
+                      placeholder="Tell us about your travel plans, questions, or how we can help you..."
+                      required
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    {isLoading ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        Sending Message...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </button>
+                </form>
               )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Your full name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="+63 123 456 7890"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Subject *
-                    </label>
-                    <select
-                      name="subject"
-                      required
-                      value={formData.subject}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select a subject</option>
-                      <option value="booking">Booking Inquiry</option>
-                      <option value="tours">Tours & Activities</option>
-                      <option value="hotels">Hotels & Accommodations</option>
-                      <option value="support">Technical Support</option>
-                      <option value="partnership">Partnership</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    name="message"
-                    required
-                    rows={6}
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Tell us how we can help you..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
-                >
-                  {loading ? 'Sending...' : 'Send Message'}
-                </button>
-              </form>
             </div>
 
-            {/* Contact Information */}
+            {/* Additional Information */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in touch</h2>
-              
-              <div className="space-y-8">
-                <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 rounded-full p-3">
-                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Visit Us</h3>
-                    <p className="text-gray-600">
-                      Tagbilaran City, Bohol<br />
-                      Philippines 6300
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="bg-green-100 rounded-full p-3">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Call Us</h3>
-                    <p className="text-gray-600">
-                      +63 123 456 7890<br />
-                      Available 24/7
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="bg-purple-100 rounded-full p-3">
-                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
-                    <p className="text-gray-600">
-                      info@guidetobohol.ph<br />
-                      support@guidetobohol.ph
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="bg-orange-100 rounded-full p-3">
-                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Business Hours</h3>
-                    <p className="text-gray-600">
-                      Monday - Sunday: 24/7<br />
-                      Emergency support available
-                    </p>
-                  </div>
-                </div>
+              <div className="card p-8 mb-8">
+                <h3 className="text-heading-3 text-xl mb-4">Why Contact Us?</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Personalized Travel Planning</p>
+                      <p className="text-small text-gray-600">Get custom itineraries based on your interests and budget</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Local Expertise</p>
+                      <p className="text-small text-gray-600">Insider tips and recommendations from Bohol natives</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">24/7 Support</p>
+                      <p className="text-small text-gray-600">Round-the-clock assistance during your trip</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-3 h-3 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Best Price Guarantee</p>
+                      <p className="text-small text-gray-600">Competitive rates and exclusive deals for our customers</p>
+                    </div>
+                  </li>
+                </ul>
               </div>
 
-              {/* FAQ Section */}
-              <div className="mt-12">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Frequently Asked Questions</h3>
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-900">How do I make a booking?</h4>
-                    <p className="text-gray-600 text-sm">Simply browse our tours or hotels, select your preferred option, choose your dates, and complete the booking process online.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Can I cancel my booking?</h4>
-                    <p className="text-gray-600 text-sm">Yes, most bookings can be cancelled. Cancellation policies vary by provider, so please check the specific terms for your booking.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Do you provide airport transfers?</h4>
-                    <p className="text-gray-600 text-sm">Yes, we offer airport transfer services from Tagbilaran Airport to various destinations across Bohol.</p>
-                  </div>
-                </div>
+              <div className="card p-8 bg-gradient-to-br from-blue-50 to-purple-50">
+                <h3 className="text-heading-3 text-xl mb-4">Quick Response Guarantee</h3>
+                <p className="text-body mb-4">
+                  We understand that planning your trip is exciting and time-sensitive. That's why we guarantee:
+                </p>
+                <ul className="space-y-2 text-body">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Response within 2 hours during business days</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>24-hour response guarantee on weekends</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <span>Immediate emergency support while traveling</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

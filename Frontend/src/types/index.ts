@@ -80,9 +80,10 @@ export interface Hotel {
   reviewCount: number;
   reviews: Review[];
   policies: HotelPolicies;
+  nearbyAttractions?: NearbyAttraction[];
   isActive: boolean;
   isFeatured: boolean;
-  category: 'Budget' | 'Mid-range' | 'Luxury' | 'Resort';
+  category: 'Budget' | 'Mid-range' | 'Luxury' | 'Resort' | 'Boutique';
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -167,15 +168,18 @@ export interface EmergencyContact {
 export interface Review {
   _id: string;
   userId: string;
-  user: User;
+  user?: User;
+  userName?: string;
+  userAvatar?: string;
   tourId?: string;
   hotelId?: string;
   rating: number;
-  title: string;
+  title?: string;
   comment: string;
   images?: string[];
-  isVerified: boolean;
+  isVerified?: boolean;
   helpful: number;
+  date?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -263,9 +267,16 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 export type BookingStatus = 
   | 'pending'
   | 'confirmed'
+  | 'upcoming'
   | 'cancelled'
   | 'completed'
   | 'no-show';
+
+export interface NearbyAttraction {
+  name: string;
+  distance: string;
+  type: string;
+}
 
 export type PaymentStatus = 
   | 'pending'

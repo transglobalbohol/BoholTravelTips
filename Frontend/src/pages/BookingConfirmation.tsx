@@ -37,10 +37,11 @@ const BookingConfirmation: React.FC = () => {
     // Simulate API call
     const fetchBooking = async () => {
       setLoading(true);
+      // Instant loading for better UX
       setTimeout(() => {
         setBooking(mockBooking);
         setLoading(false);
-      }, 1000);
+      }, 100);
     };
 
     fetchBooking();

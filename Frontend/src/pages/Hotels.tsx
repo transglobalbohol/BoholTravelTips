@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Hotel, SearchFilters } from '../types';
+import { Star, MapPin, Filter, Wifi, Car, Coffee, Waves, Dumbbell, Baby, Users } from 'lucide-react';
 
 const Hotels: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,7 +17,7 @@ const Hotels: React.FC = () => {
     sortBy: 'popularity',
   });
 
-  // Mock hotel data - replace with API call
+  // Enhanced mock hotel data
   const mockHotels: Hotel[] = [
     {
       _id: '1',
@@ -29,7 +30,7 @@ const Hotels: React.FC = () => {
       coordinates: { latitude: 9.5847, longitude: 123.7618 },
       pricePerNight: 8500,
       originalPrice: 10000,
-      amenities: ['Ocean View', 'Pool', 'Spa', 'Restaurant', 'WiFi', 'Gym', 'Bar'],
+      amenities: ['Ocean View', 'Infinity Pool', 'Spa', 'Fine Dining', 'WiFi', 'Gym', 'Beach Bar'],
       rooms: [
         {
           type: 'Deluxe Room',
@@ -95,17 +96,182 @@ const Hotels: React.FC = () => {
       tags: ['family-friendly', 'beach', 'pools'],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '3',
+      name: 'Henann Resort Alona Beach',
+      slug: 'henann-resort-alona-beach',
+      description: 'Beachfront resort located on the famous Alona Beach with modern amenities and excellent service. Perfect for beach lovers.',
+      shortDescription: 'Prime Alona Beach location with modern amenities',
+      location: 'Panglao Island',
+      address: 'Alona Beach, Panglao, Bohol',
+      coordinates: { latitude: 9.5681, longitude: 123.7644 },
+      pricePerNight: 5200,
+      originalPrice: 6000,
+      amenities: ['Beach Front', 'Swimming Pool', 'Restaurant', 'WiFi', 'Bar', 'Room Service'],
+      rooms: [],
+      images: [
+        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      ],
+      rating: 4.4,
+      reviewCount: 673,
+      reviews: [],
+      policies: {
+        checkIn: '2:00 PM',
+        checkOut: '12:00 PM',
+        cancellation: 'Free cancellation up to 24 hours before check-in',
+        children: 'Children welcome',
+        pets: 'Pets not allowed',
+        smoking: 'Non-smoking rooms available'
+      },
+      isActive: true,
+      isFeatured: false,
+      category: 'Mid-range',
+      tags: ['beach', 'central', 'popular'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '4',
+      name: 'Bohol Beach Club',
+      slug: 'bohol-beach-club',
+      description: 'Historic beachfront resort with traditional Filipino architecture and modern comfort. Offers authentic island experience.',
+      shortDescription: 'Historic resort with traditional Filipino charm',
+      location: 'Panglao Island',
+      address: 'Bolod Beach, Panglao, Bohol',
+      coordinates: { latitude: 9.5681, longitude: 123.7644 },
+      pricePerNight: 4500,
+      amenities: ['Beach Access', 'Pool', 'Restaurant', 'WiFi', 'Spa Services', 'Cultural Shows'],
+      rooms: [],
+      images: [
+        'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      ],
+      rating: 4.2,
+      reviewCount: 445,
+      reviews: [],
+      policies: {
+        checkIn: '2:00 PM',
+        checkOut: '11:00 AM',
+        cancellation: 'Free cancellation up to 24 hours before check-in',
+        children: 'Children welcome',
+        pets: 'Pets not allowed',
+        smoking: 'Smoking allowed in designated areas'
+      },
+      isActive: true,
+      isFeatured: false,
+      category: 'Mid-range',
+      tags: ['traditional', 'cultural', 'historic'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '5',
+      name: 'The Peacock Garden',
+      slug: 'peacock-garden-baclayon',
+      description: 'Boutique resort set in lush tropical gardens with unique architecture and personalized service. A hidden gem for discerning travelers.',
+      shortDescription: 'Boutique resort in tropical gardens',
+      location: 'Baclayon',
+      address: 'Baclayon, Bohol',
+      coordinates: { latitude: 9.6236, longitude: 123.9058 },
+      pricePerNight: 3800,
+      amenities: ['Garden Setting', 'Pool', 'Restaurant', 'WiFi', 'Library', 'Spa'],
+      rooms: [],
+      images: [
+        'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      ],
+      rating: 4.7,
+      reviewCount: 234,
+      reviews: [],
+      policies: {
+        checkIn: '3:00 PM',
+        checkOut: '12:00 PM',
+        cancellation: 'Free cancellation up to 48 hours before check-in',
+        children: 'Children 12+ welcome',
+        pets: 'Pets allowed with fee',
+        smoking: 'Non-smoking property'
+      },
+      isActive: true,
+      isFeatured: false,
+      category: 'Boutique',
+      tags: ['garden', 'quiet', 'unique'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      _id: '6',
+      name: 'GV Tower Hotel',
+      slug: 'gv-tower-hotel-tagbilaran',
+      description: 'Modern business hotel in the heart of Tagbilaran City. Perfect for business travelers and city exploration.',
+      shortDescription: 'Modern city hotel with business facilities',
+      location: 'Tagbilaran City',
+      address: 'Carlos P. Garcia Ave, Tagbilaran, Bohol',
+      coordinates: { latitude: 9.6496, longitude: 123.8536 },
+      pricePerNight: 2200,
+      amenities: ['City Center', 'Business Center', 'Restaurant', 'WiFi', 'Meeting Rooms', 'Airport Shuttle'],
+      rooms: [],
+      images: [
+        'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+      ],
+      rating: 4.1,
+      reviewCount: 334,
+      reviews: [],
+      policies: {
+        checkIn: '2:00 PM',
+        checkOut: '12:00 PM',
+        cancellation: 'Free cancellation up to 24 hours before check-in',
+        children: 'Children welcome',
+        pets: 'Pets not allowed',
+        smoking: 'Non-smoking floors available'
+      },
+      isActive: true,
+      isFeatured: false,
+      category: 'Mid-range',
+      tags: ['city', 'business', 'convenient'],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
   ];
 
   useEffect(() => {
-    // Simulate API call
     const fetchHotels = async () => {
       setLoading(true);
+      // Optimized filtering with reduced delay
+      let filteredHotels = [...mockHotels];
+        
+        // Apply filters
+        if (filters.destination && filters.destination !== 'All Destinations') {
+          filteredHotels = filteredHotels.filter(hotel => 
+            hotel.location.includes(filters.destination!) ||
+            hotel.tags.some(tag => tag.toLowerCase().includes(filters.destination!.toLowerCase()))
+          );
+        }
+        
+        if (filters.category && filters.category !== 'All Categories') {
+          filteredHotels = filteredHotels.filter(hotel => 
+            hotel.category === filters.category
+          );
+        }
+        
+        if (filters.priceRange?.max) {
+          filteredHotels = filteredHotels.filter(hotel => 
+            hotel.pricePerNight <= filters.priceRange!.max!
+          );
+        }
+        
+        // Apply sorting
+        if (filters.sortBy === 'price') {
+          filteredHotels.sort((a, b) => a.pricePerNight - b.pricePerNight);
+        } else if (filters.sortBy === 'rating') {
+          filteredHotels.sort((a, b) => b.rating - a.rating);
+        } else if (filters.sortBy === 'latest') {
+          filteredHotels.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        
+      // Fast loading - minimal delay for smooth UX
       setTimeout(() => {
-        setHotels(mockHotels);
+        setHotels(filteredHotels);
         setLoading(false);
-      }, 1000);
+      }, 150);
     };
 
     fetchHotels();
@@ -135,7 +301,7 @@ const Hotels: React.FC = () => {
     setFilters(newFilters);
     
     const params = new URLSearchParams(searchParams);
-    if (value) {
+    if (value && value !== 'All Categories' && value !== 'All Destinations') {
       params.set(key, value.toString());
     } else {
       params.delete(key);
@@ -143,37 +309,64 @@ const Hotels: React.FC = () => {
     setSearchParams(params);
   };
 
+  const getAmenityIcon = (amenity: string) => {
+    switch (amenity.toLowerCase()) {
+      case 'wifi':
+        return <Wifi className="w-4 h-4" />;
+      case 'pool':
+      case 'swimming pool':
+      case 'infinity pool':
+      case 'multiple pools':
+        return <Waves className="w-4 h-4" />;
+      case 'gym':
+        return <Dumbbell className="w-4 h-4" />;
+      case 'kids club':
+        return <Baby className="w-4 h-4" />;
+      case 'airport shuttle':
+        return <Car className="w-4 h-4" />;
+      case 'restaurant':
+      case 'fine dining':
+      case 'multiple restaurants':
+        return <Coffee className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+      <div className="bg-white border-b border-border">
+        <div className="container py-8">
+          <h1 className="text-heading-1 mb-4">
             Hotels & Resorts in Bohol
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl">
+          <p className="text-subheading max-w-3xl">
             Find the perfect accommodation for your Bohol adventure. From luxury beachfront resorts 
             to budget-friendly hotels, we have options for every traveler.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-1/4">
-            <div className="bg-white rounded-lg shadow-sm border p-6 sticky top-8">
-              <h3 className="text-lg font-semibold mb-4">Filter Hotels</h3>
+            <div className="card p-6 sticky top-24">
+              <div className="flex items-center space-x-2 mb-6">
+                <Filter className="w-5 h-5 text-gray-600" />
+                <h3 className="text-heading-3 text-lg">Filter Hotels</h3>
+              </div>
               
-              {/* Destination Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              {/* Location Filter */}
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Location
                 </label>
                 <select
                   value={filters.destination || ''}
                   onChange={(e) => handleFilterChange('destination', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   {destinations.map((dest) => (
                     <option key={dest} value={dest === 'All Destinations' ? '' : dest}>
@@ -183,15 +376,15 @@ const Hotels: React.FC = () => {
                 </select>
               </div>
 
-              {/* Category Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              {/* Hotel Type Filter */}
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Hotel Type
                 </label>
                 <select
                   value={filters.category || ''}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat === 'All Categories' ? '' : cat}>
@@ -202,58 +395,38 @@ const Hotels: React.FC = () => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group mb-6">
+                <label className="form-label">
                   Price Range (₱ per night)
                 </label>
                 <div className="space-y-3">
-                  <div>
-                    <input
-                      type="range"
-                      min="500"
-                      max="15000"
-                      value={filters.priceRange?.max || 15000}
-                      onChange={(e) => handleFilterChange('priceRange', { 
-                        ...filters.priceRange, 
-                        max: parseInt(e.target.value) 
-                      })}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-sm text-gray-500">
-                      <span>₱500</span>
-                      <span>₱{filters.priceRange?.max?.toLocaleString() || '15,000'}</span>
-                    </div>
+                  <input
+                    type="range"
+                    min="500"
+                    max="15000"
+                    value={filters.priceRange?.max || 15000}
+                    onChange={(e) => handleFilterChange('priceRange', { 
+                      ...filters.priceRange, 
+                      max: parseInt(e.target.value) 
+                    })}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <div className="flex justify-between text-small">
+                    <span>₱500</span>
+                    <span className="font-medium">₱{filters.priceRange?.max?.toLocaleString() || '15,000'}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Amenities Filter */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amenities
-                </label>
-                <div className="space-y-2">
-                  {['Pool', 'Beach Access', 'Spa', 'Restaurant', 'WiFi', 'Gym', 'Kids Club'].map((amenity) => (
-                    <label key={amenity} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-sm text-gray-700">{amenity}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
               {/* Sort By */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="form-group">
+                <label className="form-label">
                   Sort By
                 </label>
                 <select
                   value={filters.sortBy || 'popularity'}
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 >
                   <option value="popularity">Most Popular</option>
                   <option value="price">Price: Low to High</option>
@@ -264,12 +437,12 @@ const Hotels: React.FC = () => {
             </div>
           </div>
 
-          {/* Hotels Grid */}
+          {/* Hotels List */}
           <div className="lg:w-3/4">
             {/* Results Info */}
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-600">
-                {loading ? 'Loading...' : `${hotels.length} hotels found`}
+              <p className="text-body">
+                {loading ? 'Loading hotels...' : `${hotels.length} hotel${hotels.length !== 1 ? 's' : ''} found`}
               </p>
             </div>
 
@@ -277,9 +450,9 @@ const Hotels: React.FC = () => {
             {loading && (
               <div className="space-y-6">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg shadow-sm border animate-pulse">
+                  <div key={i} className="card animate-pulse">
                     <div className="md:flex">
-                      <div className="h-48 md:h-32 md:w-48 bg-gray-200"></div>
+                      <div className="h-48 md:h-32 md:w-72 bg-gray-200"></div>
                       <div className="p-6 flex-1">
                         <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
                         <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
@@ -298,7 +471,7 @@ const Hotels: React.FC = () => {
                   <Link
                     key={hotel._id}
                     to={`/hotels/${hotel._id}`}
-                    className="bg-white rounded-lg shadow-sm hover:shadow-lg transition duration-300 border overflow-hidden block"
+                    className="card-interactive overflow-hidden block"
                   >
                     <div className="md:flex">
                       {/* Hotel Image */}
@@ -307,14 +480,15 @@ const Hotels: React.FC = () => {
                           src={hotel.images[0]}
                           alt={hotel.name}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                         {hotel.isFeatured && (
-                          <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded-md text-sm font-medium">
+                          <div className="absolute top-3 left-3 badge badge-primary">
                             Featured
                           </div>
                         )}
                         {hotel.originalPrice && (
-                          <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-bold">
+                          <div className="absolute top-3 right-3 badge badge-error">
                             -{Math.round(((hotel.originalPrice - hotel.pricePerNight) / hotel.originalPrice) * 100)}%
                           </div>
                         )}
@@ -323,74 +497,68 @@ const Hotels: React.FC = () => {
                       {/* Hotel Info */}
                       <div className="p-6 flex-1 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <div className="flex items-center space-x-2 mb-1">
-                                <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <span className="badge text-xs">
                                   {hotel.category}
                                 </span>
                                 <div className="flex items-center space-x-1">
-                                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  </svg>
-                                  <span className="text-sm text-gray-500">{hotel.location}</span>
+                                  <MapPin className="w-3 h-3 text-gray-400" />
+                                  <span className="text-small text-gray-500">{hotel.location}</span>
                                 </div>
                               </div>
-                              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                              <h3 className="text-heading-3 text-xl mb-2">
                                 {hotel.name}
                               </h3>
                             </div>
-                            <div className="text-right">
-                              <div className="flex items-center space-x-2 mb-1">
+                            <div className="text-right ml-4">
+                              <div className="flex items-center space-x-1 mb-2">
                                 <div className="flex space-x-1">
                                   {[...Array(5)].map((_, i) => (
-                                    <svg
+                                    <Star
                                       key={i}
                                       className={`w-4 h-4 ${
-                                        i < Math.floor(hotel.rating) ? 'text-yellow-400' : 'text-gray-300'
+                                        i < Math.floor(hotel.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
                                       }`}
-                                      fill="currentColor"
-                                      viewBox="0 0 20 20"
-                                    >
-                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
+                                    />
                                   ))}
                                 </div>
-                                <span className="text-sm text-gray-600">
+                                <span className="text-small text-gray-600">
                                   {hotel.rating} ({hotel.reviewCount})
                                 </span>
                               </div>
-                              <div className="flex items-center space-x-2">
+                              <div className="flex items-baseline space-x-2">
                                 {hotel.originalPrice && (
-                                  <span className="text-sm text-gray-500 line-through">
+                                  <span className="text-small text-gray-500 line-through">
                                     ₱{hotel.originalPrice.toLocaleString()}
                                   </span>
                                 )}
-                                <span className="text-xl font-bold text-blue-600">
+                                <span className="text-xl font-bold text-gray-900">
                                   ₱{hotel.pricePerNight.toLocaleString()}
                                 </span>
-                                <span className="text-gray-600 text-sm">per night</span>
                               </div>
+                              <span className="text-small text-gray-500">per night</span>
                             </div>
                           </div>
                           
-                          <p className="text-gray-600 mb-3 line-clamp-2">
+                          <p className="text-body mb-4 line-clamp-2">
                             {hotel.shortDescription}
                           </p>
                           
                           {/* Amenities */}
-                          <div className="flex flex-wrap gap-2 mb-3">
+                          <div className="flex flex-wrap gap-2 mb-4">
                             {hotel.amenities.slice(0, 6).map((amenity, index) => (
                               <span
                                 key={index}
-                                className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded"
+                                className="inline-flex items-center space-x-1 px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-full"
                               >
-                                {amenity}
+                                {getAmenityIcon(amenity)}
+                                <span>{amenity}</span>
                               </span>
                             ))}
                             {hotel.amenities.length > 6 && (
-                              <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                              <span className="inline-flex items-center px-3 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
                                 +{hotel.amenities.length - 6} more
                               </span>
                             )}
@@ -398,8 +566,8 @@ const Hotels: React.FC = () => {
                         </div>
                         
                         {/* Policies */}
-                        <div className="text-xs text-gray-500 border-t pt-3">
-                          <div className="flex items-center space-x-4">
+                        <div className="text-small text-gray-500 border-t border-gray-100 pt-4">
+                          <div className="flex flex-wrap items-center gap-4">
                             <span>Check-in: {hotel.policies.checkIn}</span>
                             <span>Check-out: {hotel.policies.checkOut}</span>
                             <span className="text-green-600 font-medium">Free cancellation</span>
@@ -414,18 +582,18 @@ const Hotels: React.FC = () => {
 
             {/* No Results */}
             {!loading && hotels.length === 0 && (
-              <div className="text-center py-12">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No hotels found</h3>
-                <p className="mt-2 text-gray-500">Try adjusting your filters to see more results.</p>
+              <div className="card p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Filter className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-heading-3 text-lg mb-2">No hotels found</h3>
+                <p className="text-body mb-6">Try adjusting your filters to see more results.</p>
                 <button
                   onClick={() => {
                     setFilters({ sortBy: 'popularity' });
                     setSearchParams(new URLSearchParams());
                   }}
-                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                  className="btn-primary"
                 >
                   Clear Filters
                 </button>

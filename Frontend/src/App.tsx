@@ -9,11 +9,13 @@ import { lazyWithRetry } from './utils/performance';
 // Components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import ScrollToTop from './components/common/ScrollToTop';
+import ScrollToTopButton from './components/common/ScrollToTopButton';
 
 // Loading component
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[400px]">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
   </div>
 );
 
@@ -64,10 +66,18 @@ function App(): JSX.Element {
     <AuthProvider>
       <BookingProvider>
         <Router>
-          <div className="App min-h-screen flex flex-col bg-white">
+          {/* Automatically scroll to top on route changes */}
+          <ScrollToTop 
+            smooth={true}
+            preserveOnBack={false}
+            excludeRoutes={[]} // Add routes here if needed: ['/travel-guides']
+            delay={0}
+          />
+          
+          <div className="App min-h-screen flex flex-col bg-gray-50">
             <Header />
             
-            <main className="flex-grow" role="main">
+            <main className="flex-grow header-spacing" role="main">
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   {/* Public Routes */}
@@ -92,14 +102,14 @@ function App(): JSX.Element {
                   
                   {/* 404 Route */}
                   <Route path="*" element={
-                    <div className="container mx-auto px-4 py-16 text-center">
-                      <h1 className="text-4xl font-bold text-gray-900 mb-4">404 - Page Not Found</h1>
-                      <p className="text-lg text-gray-600 mb-8">
+                    <div className="container py-16 text-center">
+                      <h1 className="text-heading-2 mb-4">404 - Page Not Found</h1>
+                      <p className="text-subheading mb-8">
                         The page you're looking for doesn't exist.
                       </p>
                       <a 
                         href="/" 
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200"
+                        className="btn-primary"
                       >
                         Return to Homepage
                       </a>
@@ -112,6 +122,9 @@ function App(): JSX.Element {
             <Footer />
           </div>
           
+          {/* Floating scroll to top button */}
+          <ScrollToTopButton />
+          
           {/* Toast Notifications */}
           <Toaster 
             position="top-right"
@@ -119,22 +132,24 @@ function App(): JSX.Element {
               duration: 4000,
               style: {
                 background: '#fff',
-                color: '#363636',
-                boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                borderRadius: '8px',
+                color: '#1f2937',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                borderRadius: '12px',
                 border: '1px solid #e5e7eb',
+                fontSize: '14px',
+                fontWeight: '500',
               },
               success: {
                 duration: 4000,
                 iconTheme: {
-                  primary: '#10b981',
+                  primary: '#059669',
                   secondary: '#fff',
                 },
               },
               error: {
                 duration: 5000,
                 iconTheme: {
-                  primary: '#ef4444',
+                  primary: '#dc2626',
                   secondary: '#fff',
                 },
               },
