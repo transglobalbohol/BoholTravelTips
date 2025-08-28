@@ -8,6 +8,7 @@ const {
   updateProfile,
   changePassword,
   requestPasswordReset,
+  resetPassword,
   verifyEmail
 } = require('../controllers/authController');
 const { protect, checkBruteForce } = require('../middleware/auth');
@@ -140,6 +141,17 @@ router.post('/password-reset-request',
   validateAndSanitize,
   passwordResetValidation,
   requestPasswordReset
+);
+
+router.post('/reset-password',
+  passwordResetLimiter,
+  validateAndSanitize,
+  [
+    commonValidations.text('token', 1, 255),
+    commonValidations.password,
+    handleValidationErrors
+  ],
+  resetPassword
 );
 
 router.get('/verify-email/:token',

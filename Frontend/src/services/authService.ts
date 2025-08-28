@@ -44,7 +44,7 @@ export const authService = {
 
   // Request password reset
   forgotPassword: async (email: string): Promise<{ success: boolean; message: string }> => {
-    const response = await apiClient.post('/auth/forgot-password', { email });
+    const response = await apiClient.post('/auth/password-reset-request', { email });
     return response.data;
   },
 

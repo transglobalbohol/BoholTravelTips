@@ -556,6 +556,86 @@ const requestPasswordReset = async (req, res) => {
   }
 };
 
+// Reset password with token
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token and password are required'
+      });
+    }
+
+    // Validate new password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password does not meet security requirements',
+        errors: passwordValidation.errors
+      });
+    }
+
+    // Hash the token to match stored hash
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      Logger.security('Invalid password reset attempt', {
+        token: hashedToken,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired password reset token'
+      });
+    }
+
+    // Set new password
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordChangedAt = new Date();
+    
+    // Clear all active sessions for security
+    await user.clearAllSessions();
+    
+    await user.save();
+
+    Logger.security('Password reset completed', {
+      userId: user._id,
+      email: user.email,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully. Please log in with your new password.'
+    });
+
+  } catch (error) {
+    Logger.error('Password reset error', {
+      error: error.message,
+      stack: error.stack,
+      ip: req.ip
+    });
+
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password'
+    });
+  }
+};
+
 // Email verification
 const verifyEmail = async (req, res) => {
   try {
@@ -627,5 +707,6 @@ module.exports = {
   updateProfile,
   changePassword,
   requestPasswordReset,
+  resetPassword,
   verifyEmail
 };

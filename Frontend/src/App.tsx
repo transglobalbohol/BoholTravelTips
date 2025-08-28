@@ -31,6 +31,8 @@ const TravelGuides = lazyWithRetry(() => import('./pages/TravelGuides'));
 const BookingConfirmation = lazyWithRetry(() => import('./pages/BookingConfirmation'));
 const Login = lazyWithRetry(() => import('./pages/auth/Login'));
 const Register = lazyWithRetry(() => import('./pages/auth/Register'));
+const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword'));
+const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
 const Dashboard = lazyWithRetry(() => import('./pages/Dashboard'));
 const About = lazyWithRetry(() => import('./pages/About'));
 const Contact = lazyWithRetry(() => import('./pages/Contact'));
@@ -95,6 +97,8 @@ function App(): JSX.Element {
                   {/* Auth Routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password/:token" element={<ResetPassword />} />
                   
                   {/* Protected Routes */}
                   <Route path="/dashboard" element={<Dashboard />} />
