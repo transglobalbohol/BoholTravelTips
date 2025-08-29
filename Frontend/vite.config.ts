@@ -1,1 +1,61 @@
-import { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\nimport { resolve } from 'path';\n\nexport default defineConfig({\n  plugins: [\n    react({\n      jsxRuntime: 'automatic'\n    })\n  ],\n\n  build: {\n    target: 'es2020',\n    outDir: 'dist',\n    sourcemap: false,\n    minify: 'terser',\n    cssCodeSplit: true,\n    emptyOutDir: true,\n    \n    rollupOptions: {\n      output: {\n        chunkFileNames: 'assets/js/[hash].js',\n        entryFileNames: 'assets/js/[hash].js',\n        assetFileNames: 'assets/[ext]/[hash].[ext]',\n        \n        manualChunks: {\n          'react-vendor': ['react', 'react-dom'],\n          'router': ['react-router-dom'],\n          'ui-vendor': ['lucide-react', 'react-hot-toast'],\n          'utils-vendor': ['axios', 'date-fns', 'validator'],\n          'forms-vendor': ['react-hook-form', 'yup'],\n          'state-vendor': ['zustand', 'react-query']\n        }\n      }\n    }\n  },\n\n  resolve: {\n    alias: {\n      '@': resolve(__dirname, 'src'),\n      '@components': resolve(__dirname, 'src/components'),\n      '@pages': resolve(__dirname, 'src/pages'),\n      '@utils': resolve(__dirname, 'src/utils'),\n      '@services': resolve(__dirname, 'src/services'),\n      '@context': resolve(__dirname, 'src/context'),\n      '@hooks': resolve(__dirname, 'src/hooks'),\n      '@types': resolve(__dirname, 'src/types')\n    }\n  },\n\n  optimizeDeps: {\n    include: [\n      'react',\n      'react-dom',\n      'react-router-dom',\n      'axios',\n      'react-hot-toast',\n      'lucide-react'\n    ]\n  }\n});\n
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
+
+export default defineConfig({
+  plugins: [
+    react({
+      jsxRuntime: 'automatic'
+    })
+  ],
+
+  build: {
+    target: 'es2020',
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    cssCodeSplit: true,
+    emptyOutDir: true,
+    
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/js/[hash].js',
+        entryFileNames: 'assets/js/[hash].js',
+        assetFileNames: 'assets/[ext]/[hash].[ext]',
+        
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'router': ['react-router-dom'],
+          'ui-vendor': ['lucide-react', 'react-hot-toast'],
+          'utils-vendor': ['axios', 'date-fns', 'validator'],
+          'forms-vendor': ['react-hook-form', 'yup'],
+          'state-vendor': ['zustand', 'react-query']
+        }
+      }
+    }
+  },
+
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+      '@components': resolve(__dirname, 'src/components'),
+      '@pages': resolve(__dirname, 'src/pages'),
+      '@utils': resolve(__dirname, 'src/utils'),
+      '@services': resolve(__dirname, 'src/services'),
+      '@context': resolve(__dirname, 'src/context'),
+      '@hooks': resolve(__dirname, 'src/hooks'),
+      '@types': resolve(__dirname, 'src/types')
+    }
+  },
+
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'axios',
+      'react-hot-toast',
+      'lucide-react'
+    ]
+  }
+});
