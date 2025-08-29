@@ -5,42 +5,42 @@ const sampleTours = [
   {
     id: '1', name: 'Chocolate Hills Adventure', location: 'Carmen, Bohol', price: 2500, rating: 4.8,
     duration: '8 hours', category: 'adventure', description: 'Explore the world-famous Chocolate Hills',
-    image: '/images/chocolate-hills.jpg', createdAt: new Date('2024-01-01'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-01'), status: 'active'
   },
   {
     id: '2', name: 'Panglao Island Hopping', location: 'Panglao, Bohol', price: 3200, rating: 4.9,
     duration: '6 hours', category: 'beach', description: 'Beautiful beaches and snorkeling spots',
-    image: '/images/panglao-island.jpg', createdAt: new Date('2024-01-02'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-02'), status: 'active'
   },
   {
     id: '3', name: 'Tarsier Sanctuary Visit', location: 'Corella, Bohol', price: 1800, rating: 4.7,
     duration: '4 hours', category: 'wildlife', description: 'Meet the world\'s smallest primates',
-    image: '/images/tarsier.jpg', createdAt: new Date('2024-01-03'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-03'), status: 'active'
   },
   {
     id: '4', name: 'Loboc River Cruise', location: 'Loboc, Bohol', price: 2200, rating: 4.6,
     duration: '3 hours', category: 'cruise', description: 'Scenic river cruise with cultural show',
-    image: '/images/loboc-river.jpg', createdAt: new Date('2024-01-04'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-04'), status: 'active'
   },
   {
     id: '5', name: 'Hinagdanan Cave Exploration', location: 'Dauis, Bohol', price: 1500, rating: 4.5,
     duration: '2 hours', category: 'cave', description: 'Underground cave with natural pools',
-    image: '/images/hinagdanan-cave.jpg', createdAt: new Date('2024-01-05'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-05'), status: 'active'
   },
   {
     id: '6', name: 'Bohol Countryside Tour', location: 'Multiple Locations', price: 4500, rating: 4.8,
     duration: '10 hours', category: 'cultural', description: 'Complete countryside experience',
-    image: '/images/countryside.jpg', createdAt: new Date('2024-01-06'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-06'), status: 'active'
   },
   {
     id: '7', name: 'Anda Beach Escape', location: 'Anda, Bohol', price: 3800, rating: 4.9,
     duration: '8 hours', category: 'beach', description: 'Pristine white sand beaches',
-    image: '/images/anda-beach.jpg', createdAt: new Date('2024-01-07'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-07'), status: 'active'
   },
   {
     id: '8', name: 'Danao Adventure Park', location: 'Danao, Bohol', price: 2800, rating: 4.4,
     duration: '6 hours', category: 'adventure', description: 'Extreme adventure activities',
-    image: '/images/danao-adventure.jpg', createdAt: new Date('2024-01-08'), status: 'active'
+    image: '/images/boholLandingPage.webp', createdAt: new Date('2024-01-08'), status: 'active'
   }
 ];
 
@@ -91,6 +91,59 @@ router.get('/', (req, res) => {
         pages: Math.ceil(filtered.length / limit)
       },
       meta: { responseTime: responseTime + 'ms', cached: !!req.headers['x-cache'] }
+    });
+    
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Featured tours endpoint
+router.get('/featured', (req, res) => {
+  try {
+    const startTime = Date.now();
+    const limit = Math.min(parseInt(req.query.limit) || 4, 12);
+    
+    // Get top-rated tours as featured
+    const featuredTours = sampleTours
+      .filter(tour => tour.status === 'active')
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, limit)
+      .map(tour => ({
+        _id: tour.id,
+        title: tour.name,
+        slug: tour.name.toLowerCase().replace(/\s+/g, '-'),
+        description: tour.description,
+        shortDescription: tour.description,
+        category: {
+          _id: tour.category,
+          name: tour.category.charAt(0).toUpperCase() + tour.category.slice(1),
+          slug: tour.category,
+          description: ''
+        },
+        price: tour.price,
+        duration: tour.duration,
+        location: tour.location,
+        images: [tour.image || '/images/boholLandingPage.webp'],
+        rating: tour.rating,
+        reviewCount: Math.floor(Math.random() * 100) + 50,
+        maxGroupSize: 15,
+        isActive: true,
+        isFeatured: true
+      }));
+    
+    const responseTime = Date.now() - startTime;
+    
+    res.set({
+      'X-Response-Time': responseTime + 'ms',
+      'Cache-Control': 'public, max-age=300',
+      'Content-Type': 'application/json; charset=utf-8'
+    });
+    
+    res.json({
+      success: true,
+      data: featuredTours,
+      meta: { responseTime: responseTime + 'ms' }
     });
     
   } catch (error) {

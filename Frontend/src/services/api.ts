@@ -10,15 +10,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL ||
 // Performance optimizations for API client
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 8000, // Reduced from 10s for faster failures
+  timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Accept-Encoding': 'gzip, deflate, br', // Enable compression
+    'Accept': 'application/json'
   },
-  // Performance optimizations
   maxRedirects: 3,
-  validateStatus: (status) => status < 500, // Don't reject 4xx responses
+  validateStatus: (status) => status < 500,
   transformResponse: [
     (data) => {
       try {

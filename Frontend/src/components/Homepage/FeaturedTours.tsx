@@ -113,7 +113,7 @@ const FeaturedTours: React.FC = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredTours.slice(0, 4).map((tour) => (
+          {(featuredTours || []).slice(0, 4).map((tour) => (
             <div key={tour._id} className="card-interactive overflow-hidden">
               <div className="relative">
                 <img

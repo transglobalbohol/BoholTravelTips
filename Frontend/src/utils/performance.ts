@@ -383,6 +383,10 @@ export const monitorMemoryUsage = () => {
 
 // Performance: Service Worker registration with update handling
 export const registerServiceWorker = async () => {
+  // Disabled until sw.js is properly configured
+  console.log('Service Worker registration disabled - no sw.js file');
+  return null;
+  
   if (!('serviceWorker' in navigator) || process.env.NODE_ENV !== 'production') {
     return null;
   }

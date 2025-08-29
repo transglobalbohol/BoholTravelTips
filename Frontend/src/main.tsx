@@ -5,19 +5,15 @@ import './index.css';
 
 // Performance optimization: Preload critical resources
 const preloadCriticalResources = () => {
-  // Preload critical images
+  // Preload critical images that actually exist
   const criticalImages = [
-    '/images/hero-bohol.jpg',
-    '/images/chocolate-hills.jpg',
-    '/images/panglao-island.jpg'
+    '/images/boholLandingPage.webp'
   ];
   
   criticalImages.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = src;
-    link.as = 'image';
-    document.head.appendChild(link);
+    const img = new Image();
+    img.src = src;
+    img.onerror = () => console.warn(`Failed to preload image: ${src}`);
   });
 
   // Preload critical fonts

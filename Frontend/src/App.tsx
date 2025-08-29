@@ -52,9 +52,7 @@ function App(): JSX.Element {
     if (typeof window !== 'undefined') {
       // Preload high-priority images with better error handling
       const criticalImages = [
-        '/images/hero-bohol.jpg',
-        '/images/chocolate-hills.jpg',
-        '/images/panglao-island.jpg'
+        '/images/boholLandingPage.webp'
       ];
       
       criticalImages.forEach(src => {
