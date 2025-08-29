@@ -67,6 +67,7 @@ if (typeof window !== 'undefined') {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     
     if (navigation) {
+      // Performance metrics calculated but not logged
       const metrics = {
         domContentLoaded: navigation.domContentLoadedEventEnd - navigation.navigationStart,
         fullyLoaded: navigation.loadEventEnd - navigation.navigationStart,
@@ -83,10 +84,8 @@ if (typeof window !== 'undefined') {
           metrics.firstContentfulPaint = entry.startTime;
         }
       });
-
-      console.log('🚀 App Performance Metrics:', metrics);
       
-      // Report to analytics if available
+      // Report to analytics if available (no console logging)
       if (typeof gtag !== 'undefined') {
         gtag('event', 'performance_metrics', metrics);
       }

@@ -1,22 +1,17 @@
 # Security Headers Deployment Guide
 
-## 🎯 **Goal: Upgrade from D to A+ Security Rating**
+##  **Goal: Upgrade from D to A+ Security Rating**
 
 Your current security scan shows **Grade D** with missing headers. This guide will get you to **Grade A+**.
 
-## 🔧 **Quick Fix Steps**
+##  **Quick Fix Steps**
 
 ### **Step 1: Choose Your Hosting Platform**
 
 #### **For Vercel (Recommended)**
 1. Use the `vercel.json` file I created
 2. Deploy: `vercel --prod`
-3. Test: `curl -I https://your-app.vercel.app`
-
-#### **For Netlify**
-1. Use either `netlify.toml` OR `public/_headers` (not both)
-2. Deploy via Git push or Netlify CLI
-3. Test headers in Netlify's deploy preview
+3. Test: `curl -I https://www.boholtraveltips.com/`
 
 #### **For Other Static Hosts**
 1. Use the `public/.htaccess` file for Apache servers
@@ -71,31 +66,31 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: geolocation=()...
 ```
 
-## 🎯 **Expected Results**
+##  **Expected Results**
 
 ### **Before (Current):**
-- ❌ Grade D
-- ❌ 5 missing headers
-- ❌ Security vulnerabilities
+-  Grade D
+-  5 missing headers
+-  Security vulnerabilities
 
 ### **After (Target):**
-- ✅ Grade A+ 
-- ✅ All security headers present
-- ✅ OWASP compliance
-- ✅ Production-ready security
+-  Grade A+ 
+-  All security headers present
+-  OWASP compliance
+-  Production-ready security
 
-## ⚡ **Quick Testing Commands**
+##  **Quick Testing Commands**
 
 ```bash
 # Test security headers
-curl -I https://your-domain.com | grep -E "(Content-Security|X-Frame|X-Content|Referrer|Permissions)"
+curl -I https://www.boholtraveltips.com | grep -E "(Content-Security|X-Frame|X-Content|Referrer|Permissions)"
 
 # Test specific endpoints
-curl -I https://your-domain.com/login
-curl -I https://your-domain.com/api/health
+curl -I https://www.boholtraveltips.com/login
+curl -I https://www.boholtraveltips.com/api/health
 ```
 
-## 🔍 **Troubleshooting**
+##  **Troubleshooting**
 
 ### **Headers Not Appearing:**
 1. Check file placement (vercel.json in root, _headers in public/)
@@ -113,7 +108,7 @@ curl -I https://your-domain.com/api/health
 2. Check header values match recommended settings
 3. Use browser dev tools Network tab to inspect headers
 
-## 📞 **Support**
+##  **Support**
 
 If you get stuck:
 1. Check the specific error messages in browser console
@@ -121,7 +116,7 @@ If you get stuck:
 3. Test one header at a time to isolate issues
 4. Use browser dev tools to debug
 
-## ✅ **Success Checklist**
+##  **Success Checklist**
 
 - [ ] Config file added for your hosting platform
 - [ ] SecurityMetaTags component integrated

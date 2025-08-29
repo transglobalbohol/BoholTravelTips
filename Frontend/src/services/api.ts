@@ -122,9 +122,7 @@ apiClient.interceptors.response.use(
 
     // Calculate request duration for monitoring
     const duration = Date.now() - (response.config.metadata?.startTime || Date.now());
-    if (duration > 2000) {
-      console.warn(`Slow API request: ${response.config.url} took ${duration}ms`);
-    }
+    // Removed slow API warning console log
 
     // Cache successful GET responses
     if (response.config.method?.toLowerCase() === 'get' && response.status === 200) {

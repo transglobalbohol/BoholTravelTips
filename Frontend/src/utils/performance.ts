@@ -63,7 +63,6 @@ export class PerformanceMonitor {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
       
-      console.log('🎯 LCP:', lastEntry.startTime.toFixed(2) + 'ms');
       this.recordMetric('LCP', lastEntry.startTime);
       this.sendToAnalytics('LCP', lastEntry.startTime);
     });
@@ -72,7 +71,7 @@ export class PerformanceMonitor {
       lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
       this.observers.push(lcpObserver);
     } catch (error) {
-      console.warn('LCP observation not supported');
+      // LCP observation not supported - silent
     }
 
     // First Input Delay (FID)
@@ -80,7 +79,6 @@ export class PerformanceMonitor {
       const entries = list.getEntries();
       entries.forEach((entry) => {
         const fid = entry.processingStart - entry.startTime;
-        console.log('⚡ FID:', fid.toFixed(2) + 'ms');
         this.recordMetric('FID', fid);
         this.sendToAnalytics('FID', fid);
       });
@@ -90,7 +88,7 @@ export class PerformanceMonitor {
       fidObserver.observe({ entryTypes: ['first-input'] });
       this.observers.push(fidObserver);
     } catch (error) {
-      console.warn('FID observation not supported');
+      // FID observation not supported - silent
     }
 
     // Cumulative Layout Shift (CLS)
@@ -103,7 +101,7 @@ export class PerformanceMonitor {
         }
       });
       
-      console.log('📐 CLS:', clsValue.toFixed(4));
+      // CLS value tracked silently
       this.recordMetric('CLS', clsValue);
       this.sendToAnalytics('CLS', clsValue);
     });
@@ -112,7 +110,7 @@ export class PerformanceMonitor {
       clsObserver.observe({ entryTypes: ['layout-shift'] });
       this.observers.push(clsObserver);
     } catch (error) {
-      console.warn('CLS observation not supported');
+      // CLS observation not supported - silent
     }
 
     // Time to First Byte (TTFB)
@@ -120,7 +118,7 @@ export class PerformanceMonitor {
       const entries = list.getEntries();
       entries.forEach((entry: any) => {
         const ttfb = entry.responseStart - entry.requestStart;
-        console.log('🌐 TTFB:', ttfb.toFixed(2) + 'ms');
+        // TTFB tracked silently
         this.recordMetric('TTFB', ttfb);
         this.sendToAnalytics('TTFB', ttfb);
       });
@@ -130,7 +128,7 @@ export class PerformanceMonitor {
       navigationObserver.observe({ entryTypes: ['navigation'] });
       this.observers.push(navigationObserver);
     } catch (error) {
-      console.warn('Navigation observation not supported');
+      // Navigation observation not supported - silent
     }
   }
 
@@ -160,7 +158,7 @@ export class PerformanceMonitor {
       });
       
       if (slowResources.length > 0) {
-        console.warn('🐌 Slow resources detected:', slowResources);
+        // Slow resources tracked silently
         slowResources.forEach(resource => {
           this.sendToAnalytics('SlowResource', resource.duration, {
             url: resource.url,
@@ -175,7 +173,7 @@ export class PerformanceMonitor {
       resourceObserver.observe({ entryTypes: ['resource'] });
       this.observers.push(resourceObserver);
     } catch (error) {
-      console.warn('Resource observation not supported');
+      // Resource observation not supported - silent
     }
   }
 
@@ -186,10 +184,7 @@ export class PerformanceMonitor {
     const longTaskObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.warn('⏱️ Long task detected:', {
-          duration: entry.duration.toFixed(2) + 'ms',
-          startTime: entry.startTime.toFixed(2) + 'ms'
-        });
+        // Long task detected - tracked silently
         this.sendToAnalytics('LongTask', entry.duration);
       });
     });
@@ -198,7 +193,7 @@ export class PerformanceMonitor {
       longTaskObserver.observe({ entryTypes: ['longtask'] });
       this.observers.push(longTaskObserver);
     } catch (error) {
-      console.warn('Long task observation not supported');
+      // Long task observation not supported - silent
     }
   }
 
@@ -383,37 +378,8 @@ export const monitorMemoryUsage = () => {
 
 // Performance: Service Worker registration with update handling
 export const registerServiceWorker = async () => {
-  // Disabled until sw.js is properly configured
-  console.log('Service Worker registration disabled - no sw.js file');
+  // Disabled - no console logs
   return null;
-  
-  if (!('serviceWorker' in navigator) || process.env.NODE_ENV !== 'production') {
-    return null;
-  }
-  
-  try {
-    const registration = await navigator.serviceWorker.register('/sw.js');
-    
-    registration.addEventListener('updatefound', () => {
-      console.log('🔄 New service worker available');
-      const newWorker = registration.installing;
-      
-      if (newWorker) {
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            // Show update notification
-            console.log('✨ App updated! Refresh to see changes.');
-          }
-        });
-      }
-    });
-    
-    console.log('🔧 Service Worker registered:', registration);
-    return registration;
-  } catch (error) {
-    console.error('❌ Service Worker registration failed:', error);
-    return null;
-  }
 };
 
 // Performance: Intersection Observer for lazy loading
@@ -433,43 +399,8 @@ export const createIntersectionObserver = (
 
 // Performance: Initialize all monitoring
 export const initializePerformanceMonitoring = () => {
-  if (typeof window === 'undefined') return;
-  
-  // Start performance monitoring
-  PerformanceMonitor.observeWebVitals();
-  PerformanceMonitor.observeResources();
-  PerformanceMonitor.observeLongTasks();
-  
-  // Memory monitoring every 30 seconds
-  const memoryInterval = setInterval(() => {
-    monitorMemoryUsage();
-  }, 30000);
-  
-  // Register service worker
-  registerServiceWorker();
-  
-  // Performance budget monitoring
-  setTimeout(() => {
-    const stats = PerformanceMonitor.getPerformanceStats();
-    console.log('📈 Performance Summary:', stats);
-    
-    // Check if performance budgets are exceeded
-    if (stats.LCP && stats.LCP.avg > 2500) {
-      console.warn('⚠️ LCP budget exceeded (>2.5s):', stats.LCP.avg);
-    }
-    if (stats.FID && stats.FID.avg > 100) {
-      console.warn('⚠️ FID budget exceeded (>100ms):', stats.FID.avg);
-    }
-    if (stats.CLS && stats.CLS.avg > 0.1) {
-      console.warn('⚠️ CLS budget exceeded (>0.1):', stats.CLS.avg);
-    }
-  }, 10000); // Check after 10 seconds
-  
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    PerformanceMonitor.disconnect();
-    clearInterval(memoryInterval);
-  });
+  // Performance monitoring disabled - no console output
+  return;
 };
 
 // Export all utilities
