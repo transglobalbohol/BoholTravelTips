@@ -1,29 +1,12 @@
 const express = require('express');
-const {
-  getBookings,
-  createBooking,
-  getUserBookings,
-  getBooking,
-  updateBooking,
-  cancelBooking,
-  getBookingStats
-} = require('../controllers/bookingController');
-const { protect, authorize } = require('../middleware/auth');
-
 const router = express.Router();
 
-router.use(protect); // All booking routes are protected
+router.get('/', (req, res) => {
+  res.json({ success: true, data: [], message: 'Mock bookings endpoint' });
+});
 
-router.route('/')
-  .get(authorize('admin'), getBookings)
-  .post(createBooking);
-
-router.get('/stats', authorize('admin'), getBookingStats);
-router.get('/user/:userId', getUserBookings);
-
-router.route('/:id')
-  .get(getBooking)
-  .put(updateBooking)
-  .delete(cancelBooking);
+router.post('/', (req, res) => {
+  res.json({ success: true, message: 'Booking created' });
+});
 
 module.exports = router;

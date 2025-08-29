@@ -1,33 +1,60 @@
 import { lazy, ComponentType } from 'react';
 
-// Lazy loading with retry mechanism
+// Performance: Enhanced lazy loading with preloading capability
 export const lazyWithRetry = <T extends ComponentType<any>>(
-  componentImport: () => Promise<{ default: T }>
+  componentImport: () => Promise<{ default: T }>,
+  maxRetries: number = 3
 ) => {
   return lazy(async () => {
     const pageHasAlreadyBeenForceRefreshed = JSON.parse(
       window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
     );
     
-    try {
-      const component = await componentImport();
-      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
-      return component;
-    } catch (error) {
-      if (!pageHasAlreadyBeenForceRefreshed) {
-        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
-        return window.location.reload() as never;
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        const component = await componentImport();
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+        return component;
+      } catch (error) {
+        retryCount++;
+        
+        if (retryCount >= maxRetries) {
+          if (!pageHasAlreadyBeenForceRefreshed) {
+            window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+            return window.location.reload() as never;
+          }
+          throw error;
+        }
+        
+        // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount - 1)));
       }
-      throw error;
     }
+    
+    throw new Error('Max retries exceeded');
   });
 };
 
-// Performance monitoring utilities
+// Performance: Component preloading
+const preloadedComponents = new Map<string, Promise<any>>();
+
+export const preloadComponent = <T extends ComponentType<any>>(
+  name: string,
+  componentImport: () => Promise<{ default: T }>
+): void => {
+  if (!preloadedComponents.has(name)) {
+    preloadedComponents.set(name, componentImport());
+  }
+};
+
+// Performance monitoring class with enhanced metrics
 export class PerformanceMonitor {
   private static observers: PerformanceObserver[] = [];
+  private static metrics: Map<string, number[]> = new Map();
 
-  // Monitor Core Web Vitals
+  // Enhanced Web Vitals monitoring
   static observeWebVitals() {
     if (typeof window === 'undefined') return;
 
@@ -36,26 +63,35 @@ export class PerformanceMonitor {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
       
-      console.log('LCP:', lastEntry.startTime);
-      
-      // Send to analytics
+      console.log('🎯 LCP:', lastEntry.startTime.toFixed(2) + 'ms');
+      this.recordMetric('LCP', lastEntry.startTime);
       this.sendToAnalytics('LCP', lastEntry.startTime);
     });
     
-    lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
-    this.observers.push(lcpObserver);
+    try {
+      lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+      this.observers.push(lcpObserver);
+    } catch (error) {
+      console.warn('LCP observation not supported');
+    }
 
     // First Input Delay (FID)
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.log('FID:', entry.processingStart - entry.startTime);
-        this.sendToAnalytics('FID', entry.processingStart - entry.startTime);
+        const fid = entry.processingStart - entry.startTime;
+        console.log('⚡ FID:', fid.toFixed(2) + 'ms');
+        this.recordMetric('FID', fid);
+        this.sendToAnalytics('FID', fid);
       });
     });
     
-    fidObserver.observe({ entryTypes: ['first-input'] });
-    this.observers.push(fidObserver);
+    try {
+      fidObserver.observe({ entryTypes: ['first-input'] });
+      this.observers.push(fidObserver);
+    } catch (error) {
+      console.warn('FID observation not supported');
+    }
 
     // Cumulative Layout Shift (CLS)
     let clsValue = 0;
@@ -67,80 +103,167 @@ export class PerformanceMonitor {
         }
       });
       
-      console.log('CLS:', clsValue);
+      console.log('📐 CLS:', clsValue.toFixed(4));
+      this.recordMetric('CLS', clsValue);
       this.sendToAnalytics('CLS', clsValue);
     });
     
-    clsObserver.observe({ entryTypes: ['layout-shift'] });
-    this.observers.push(clsObserver);
-  }
+    try {
+      clsObserver.observe({ entryTypes: ['layout-shift'] });
+      this.observers.push(clsObserver);
+    } catch (error) {
+      console.warn('CLS observation not supported');
+    }
 
-  // Monitor navigation timing
-  static observeNavigation() {
-    if (typeof window === 'undefined') return;
-
-    window.addEventListener('load', () => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
-      const metrics = {
-        DNS: navigation.domainLookupEnd - navigation.domainLookupStart,
-        TCP: navigation.connectEnd - navigation.connectStart,
-        SSL: navigation.connectEnd - navigation.secureConnectionStart,
-        TTFB: navigation.responseStart - navigation.requestStart,
-        DOMParse: navigation.domInteractive - navigation.responseEnd,
-        DOMReady: navigation.domContentLoadedEventEnd - navigation.navigationStart,
-        WindowLoad: navigation.loadEventEnd - navigation.navigationStart,
-      };
-      
-      console.log('Navigation Metrics:', metrics);
-      
-      // Send to analytics
-      Object.entries(metrics).forEach(([key, value]) => {
-        this.sendToAnalytics(`Navigation_${key}`, value);
+    // Time to First Byte (TTFB)
+    const navigationObserver = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach((entry: any) => {
+        const ttfb = entry.responseStart - entry.requestStart;
+        console.log('🌐 TTFB:', ttfb.toFixed(2) + 'ms');
+        this.recordMetric('TTFB', ttfb);
+        this.sendToAnalytics('TTFB', ttfb);
       });
     });
+    
+    try {
+      navigationObserver.observe({ entryTypes: ['navigation'] });
+      this.observers.push(navigationObserver);
+    } catch (error) {
+      console.warn('Navigation observation not supported');
+    }
   }
 
-  // Monitor resource loading
+  // Performance: Enhanced resource monitoring
   static observeResources() {
     if (typeof window === 'undefined') return;
 
     const resourceObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
+      const slowResources: any[] = [];
+      let totalSize = 0;
+      
       entries.forEach((entry) => {
         const resource = entry as PerformanceResourceTiming;
         
-        // Monitor slow resources (>2 seconds)
-        if (resource.duration > 2000) {
-          console.warn('Slow resource:', resource.name, resource.duration);
-          this.sendToAnalytics('SlowResource', resource.duration, {
+        // Track slow resources (>1 second)
+        if (resource.duration > 1000) {
+          slowResources.push({
             url: resource.name,
+            duration: resource.duration,
             type: resource.initiatorType,
+            size: resource.transferSize || 0
           });
         }
+        
+        totalSize += resource.transferSize || 0;
+      });
+      
+      if (slowResources.length > 0) {
+        console.warn('🐌 Slow resources detected:', slowResources);
+        slowResources.forEach(resource => {
+          this.sendToAnalytics('SlowResource', resource.duration, {
+            url: resource.url,
+            type: resource.type,
+            size: resource.size
+          });
+        });
+      }
+    });
+    
+    try {
+      resourceObserver.observe({ entryTypes: ['resource'] });
+      this.observers.push(resourceObserver);
+    } catch (error) {
+      console.warn('Resource observation not supported');
+    }
+  }
+
+  // Performance: Long task monitoring
+  static observeLongTasks() {
+    if (typeof window === 'undefined') return;
+
+    const longTaskObserver = new PerformanceObserver((list) => {
+      const entries = list.getEntries();
+      entries.forEach((entry) => {
+        console.warn('⏱️ Long task detected:', {
+          duration: entry.duration.toFixed(2) + 'ms',
+          startTime: entry.startTime.toFixed(2) + 'ms'
+        });
+        this.sendToAnalytics('LongTask', entry.duration);
       });
     });
     
-    resourceObserver.observe({ entryTypes: ['resource'] });
-    this.observers.push(resourceObserver);
+    try {
+      longTaskObserver.observe({ entryTypes: ['longtask'] });
+      this.observers.push(longTaskObserver);
+    } catch (error) {
+      console.warn('Long task observation not supported');
+    }
   }
 
-  // Send metrics to analytics (customize based on your analytics provider)
+  // Performance: Record metrics for analysis
+  private static recordMetric(name: string, value: number) {
+    if (!this.metrics.has(name)) {
+      this.metrics.set(name, []);
+    }
+    const values = this.metrics.get(name)!;
+    values.push(value);
+    
+    // Keep only last 100 measurements
+    if (values.length > 100) {
+      values.shift();
+    }
+  }
+
+  // Performance: Get performance statistics
+  static getPerformanceStats() {
+    const stats: Record<string, any> = {};
+    
+    this.metrics.forEach((values, name) => {
+      if (values.length > 0) {
+        const sorted = [...values].sort((a, b) => a - b);
+        stats[name] = {
+          count: values.length,
+          avg: values.reduce((a, b) => a + b, 0) / values.length,
+          min: Math.min(...values),
+          max: Math.max(...values),
+          p50: sorted[Math.floor(sorted.length * 0.5)],
+          p75: sorted[Math.floor(sorted.length * 0.75)],
+          p95: sorted[Math.floor(sorted.length * 0.95)]
+        };
+      }
+    });
+    
+    return stats;
+  }
+
+  // Enhanced analytics reporting
   private static sendToAnalytics(metric: string, value: number, extra?: any) {
-    // Example: Google Analytics 4
+    const roundedValue = Math.round(value * 100) / 100;
+    
+    // Console logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📊 ${metric}: ${roundedValue}ms`, extra || '');
+    }
+    
+    // Google Analytics 4
     if (typeof gtag !== 'undefined') {
       gtag('event', 'performance_metric', {
         metric_name: metric,
-        metric_value: Math.round(value),
+        metric_value: roundedValue,
+        custom_map: { metric_1: metric },
         ...extra,
       });
     }
     
-    // Example: Custom analytics
+    // Custom analytics
     if (typeof window !== 'undefined' && (window as any).analytics) {
       (window as any).analytics.track('Performance Metric', {
         metric,
-        value: Math.round(value),
+        value: roundedValue,
+        timestamp: Date.now(),
+        url: window.location.pathname,
         ...extra,
       });
     }
@@ -153,25 +276,34 @@ export class PerformanceMonitor {
   }
 }
 
-// Resource preloading utilities
+// Performance: Resource preloading utilities
 export const preloadResource = (href: string, as: string, crossorigin?: string) => {
+  if (typeof document === 'undefined') return;
+  
   const link = document.createElement('link');
   link.rel = 'preload';
   link.href = href;
   link.as = as;
   if (crossorigin) link.crossOrigin = crossorigin;
+  
+  link.onerror = () => console.warn(`Failed to preload resource: ${href}`);
   document.head.appendChild(link);
 };
 
 export const preloadImage = (src: string) => {
-  const link = document.createElement('link');
-  link.rel = 'preload';
-  link.href = src;
-  link.as = 'image';
-  document.head.appendChild(link);
+  if (typeof document === 'undefined') return Promise.resolve();
+  
+  return new Promise<void>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = reject;
+    img.src = src;
+  });
 };
 
 export const preloadFont = (href: string, crossorigin = 'anonymous') => {
+  if (typeof document === 'undefined') return;
+  
   const link = document.createElement('link');
   link.rel = 'preload';
   link.href = href;
@@ -181,28 +313,39 @@ export const preloadFont = (href: string, crossorigin = 'anonymous') => {
   document.head.appendChild(link);
 };
 
-// Critical CSS detection
+// Performance: Critical CSS inlining
 export const loadCriticalCSS = (css: string) => {
+  if (typeof document === 'undefined') return;
+  
   const style = document.createElement('style');
   style.textContent = css;
+  style.setAttribute('data-critical', 'true');
   document.head.appendChild(style);
 };
 
-// Non-critical CSS lazy loading
+// Performance: Non-critical CSS lazy loading
 export const loadCSS = (href: string) => {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = href;
-  link.media = 'print';
-  link.onload = function() {
-    (this as any).media = 'all';
-  };
-  document.head.appendChild(link);
+  if (typeof document === 'undefined') return Promise.resolve();
+  
+  return new Promise<void>((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.media = 'print';
+    link.onload = function() {
+      (this as any).media = 'all';
+      resolve();
+    };
+    link.onerror = reject;
+    document.head.appendChild(link);
+  });
 };
 
-// JavaScript lazy loading with intersection observer
+// Performance: Script lazy loading with intersection observer
 export const lazyLoadScript = (src: string, condition: () => boolean = () => true) => {
-  if (!condition()) return Promise.resolve();
+  if (typeof document === 'undefined' || !condition()) {
+    return Promise.resolve();
+  }
   
   return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
@@ -214,55 +357,121 @@ export const lazyLoadScript = (src: string, condition: () => boolean = () => tru
   });
 };
 
-// Service Worker registration
-export const registerServiceWorker = async () => {
-  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered:', registration);
-      return registration;
-    } catch (error) {
-      console.error('Service Worker registration failed:', error);
-    }
-  }
-};
-
-// Memory usage monitoring
+// Performance: Enhanced memory monitoring
 export const monitorMemoryUsage = () => {
-  if ('memory' in performance) {
-    const memory = (performance as any).memory;
-    console.log('Memory Usage:', {
-      used: Math.round(memory.usedJSHeapSize / 1024 / 1024) + ' MB',
-      total: Math.round(memory.totalJSHeapSize / 1024 / 1024) + ' MB',
-      limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024) + ' MB',
+  if (typeof performance === 'undefined' || !('memory' in performance)) {
+    return null;
+  }
+  
+  const memory = (performance as any).memory;
+  const usage = {
+    used: Math.round(memory.usedJSHeapSize / 1024 / 1024),
+    total: Math.round(memory.totalJSHeapSize / 1024 / 1024),
+    limit: Math.round(memory.jsHeapSizeLimit / 1024 / 1024),
+    usedPercentage: Math.round((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100)
+  };
+  
+  // Warn if memory usage is high
+  if (usage.usedPercentage > 80) {
+    console.warn('🧠 High memory usage detected:', usage);
+  } else if (usage.usedPercentage > 60) {
+    console.log('🧠 Memory usage:', usage);
+  }
+  
+  return usage;
+};
+
+// Performance: Service Worker registration with update handling
+export const registerServiceWorker = async () => {
+  if (!('serviceWorker' in navigator) || process.env.NODE_ENV !== 'production') {
+    return null;
+  }
+  
+  try {
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    
+    registration.addEventListener('updatefound', () => {
+      console.log('🔄 New service worker available');
+      const newWorker = registration.installing;
+      
+      if (newWorker) {
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Show update notification
+            console.log('✨ App updated! Refresh to see changes.');
+          }
+        });
+      }
     });
+    
+    console.log('🔧 Service Worker registered:', registration);
+    return registration;
+  } catch (error) {
+    console.error('❌ Service Worker registration failed:', error);
+    return null;
   }
 };
 
-// Bundle size monitoring
-export const reportBundleSize = () => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Bundle analysis available at build time');
-  }
+// Performance: Intersection Observer for lazy loading
+export const createIntersectionObserver = (
+  callback: IntersectionObserverCallback,
+  options: IntersectionObserverInit = {}
+) => {
+  const defaultOptions: IntersectionObserverInit = {
+    root: null,
+    rootMargin: '50px',
+    threshold: 0.1,
+    ...options
+  };
+  
+  return new IntersectionObserver(callback, defaultOptions);
 };
 
-// Initialize all performance monitoring
+// Performance: Initialize all monitoring
 export const initializePerformanceMonitoring = () => {
-  if (typeof window !== 'undefined') {
-    PerformanceMonitor.observeWebVitals();
-    PerformanceMonitor.observeNavigation();
-    PerformanceMonitor.observeResources();
+  if (typeof window === 'undefined') return;
+  
+  // Start performance monitoring
+  PerformanceMonitor.observeWebVitals();
+  PerformanceMonitor.observeResources();
+  PerformanceMonitor.observeLongTasks();
+  
+  // Memory monitoring every 30 seconds
+  const memoryInterval = setInterval(() => {
+    monitorMemoryUsage();
+  }, 30000);
+  
+  // Register service worker
+  registerServiceWorker();
+  
+  // Performance budget monitoring
+  setTimeout(() => {
+    const stats = PerformanceMonitor.getPerformanceStats();
+    console.log('📈 Performance Summary:', stats);
     
-    // Monitor memory usage every 30 seconds
-    setInterval(monitorMemoryUsage, 30000);
-    
-    // Register service worker
-    registerServiceWorker();
-  }
+    // Check if performance budgets are exceeded
+    if (stats.LCP && stats.LCP.avg > 2500) {
+      console.warn('⚠️ LCP budget exceeded (>2.5s):', stats.LCP.avg);
+    }
+    if (stats.FID && stats.FID.avg > 100) {
+      console.warn('⚠️ FID budget exceeded (>100ms):', stats.FID.avg);
+    }
+    if (stats.CLS && stats.CLS.avg > 0.1) {
+      console.warn('⚠️ CLS budget exceeded (>0.1):', stats.CLS.avg);
+    }
+  }, 10000); // Check after 10 seconds
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    PerformanceMonitor.disconnect();
+    clearInterval(memoryInterval);
+  });
 };
 
+// Export all utilities
 export default {
   lazyWithRetry,
+  preloadComponent,
   PerformanceMonitor,
   preloadResource,
   preloadImage,
@@ -270,8 +479,8 @@ export default {
   loadCriticalCSS,
   loadCSS,
   lazyLoadScript,
-  registerServiceWorker,
   monitorMemoryUsage,
-  reportBundleSize,
+  registerServiceWorker,
+  createIntersectionObserver,
   initializePerformanceMonitoring,
 };

@@ -14,7 +14,13 @@
     "install-deps": "npm install",
     "check-deps": "npm list --depth=0",
     "diagnose": "node diagnose.js",
-    "test-connection": "node test-connection.js"
+    "test-connection": "node test-connection.js",
+    "performance-test": "node ../test-performance.js",
+    "performance-advanced": "node ../test-performance-advanced.js",
+    "cache-status": "node ../cache-manager.js status",
+    "cache-warmup": "node ../cache-manager.js warmup",
+    "cache-monitor": "node ../cache-manager.js monitor",
+    "start-optimized": "NODE_ENV=production node server.js"
   },
   "keywords": [
     "tourism",
@@ -47,6 +53,7 @@
     "mongoose": "^8.0.3",
     "morgan": "^1.10.0",
     "multer": "^2.0.0-alpha.6",
+    "node-cache": "^5.1.2",
     "react-helmet-async": "^2.0.5",
     "slugify": "^1.6.6",
     "validator": "^13.11.0"
