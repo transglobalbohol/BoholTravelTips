@@ -275,10 +275,6 @@ export default defineConfig({
   // ESBuild configuration for faster builds
   esbuild: {
     target: 'es2020',
-    platform: 'browser',
-    format: 'esm',
-    splitting: true,
-    treeShaking: true,
     minifyIdentifiers: true,
     minifySyntax: true,
     minifyWhitespace: true,
