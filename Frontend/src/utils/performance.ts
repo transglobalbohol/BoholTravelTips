@@ -237,10 +237,7 @@ export class PerformanceMonitor {
   private static sendToAnalytics(metric: string, value: number, extra?: any) {
     const roundedValue = Math.round(value * 100) / 100;
     
-    // Console logging for development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`📊 ${metric}: ${roundedValue}ms`, extra || '');
-    }
+    // Analytics reporting without console logging
     
     // Google Analytics 4
     if (typeof gtag !== 'undefined') {
@@ -281,7 +278,7 @@ export const preloadResource = (href: string, as: string, crossorigin?: string) 
   link.as = as;
   if (crossorigin) link.crossOrigin = crossorigin;
   
-  link.onerror = () => console.warn(`Failed to preload resource: ${href}`);
+  link.onerror = () => {}; // Silent error handling
   document.head.appendChild(link);
 };
 
@@ -366,11 +363,11 @@ export const monitorMemoryUsage = () => {
     usedPercentage: Math.round((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100)
   };
   
-  // Warn if memory usage is high
+  // Memory usage tracking - no console output
   if (usage.usedPercentage > 80) {
-    console.warn('🧠 High memory usage detected:', usage);
+    // High memory usage tracked silently
   } else if (usage.usedPercentage > 60) {
-    console.log('🧠 Memory usage:', usage);
+    // Memory usage tracked silently
   }
   
   return usage;
