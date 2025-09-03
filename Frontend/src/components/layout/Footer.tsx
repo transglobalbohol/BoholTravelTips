@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               Bohol's largest online marketplace for travel experiences. We make it easier than ever to plan, book, and enjoy your dream vacation on this beautiful island.
             </p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="footer-link">
+              <a href="https://www.facebook.com/share/16e1meZ7pq/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="footer-link">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-link">
@@ -118,13 +118,13 @@ const Footer: React.FC = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-300">Tagbilaran City</p>
-                  <p className="text-gray-300">Bohol, Philippines</p>
+                  <p className="text-gray-300">Suite 526 Cityland Shaw Tower, Shaw Boulevard Ortigas Center,</p>
+                  <p className="text-gray-300">Mandaluyong, Philippines</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                <p className="text-gray-300">hello@guidetobohol.ph</p>
+                <p className="text-gray-300">reservations@transglobaltravelandtours.com</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-gray-400 flex-shrink-0" />
