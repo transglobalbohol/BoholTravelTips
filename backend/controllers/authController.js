@@ -186,6 +186,13 @@ const login = async (req, res) => {
       });
     }
 
+    Logger.info('User found for login attempt', {
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      emailVerified: user.emailVerified
+    });
+
     // Check if account is locked
     if (user.isLocked) {
       Logger.security('Login attempt on locked account', {
@@ -219,6 +226,11 @@ const login = async (req, res) => {
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
+    
+    Logger.info('Password verification attempt', {
+      email: user.email,
+      passwordValid: isPasswordValid
+    });
     
     if (!isPasswordValid) {
       await user.incLoginAttempts();
