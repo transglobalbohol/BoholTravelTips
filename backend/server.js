@@ -129,7 +129,11 @@ app.use('/uploads', (req, res, next) => {
 }, express.static('uploads', { maxAge: '1d', etag: true }));
 
 const { connectDB, checkConnection, getCacheStats } = require('./config/database');
-connectDB();
+const { initializeAdmin } = require('./scripts/initAdmin');
+
+connectDB().then(() => {
+  initializeAdmin();
+});
 
 const authRoutes = require('./routes/auth');
 const tourRoutes = require('./routes/tours');

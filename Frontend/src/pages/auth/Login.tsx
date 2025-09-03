@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',                                                                                                      
@@ -24,17 +24,29 @@ const Login: React.FC = () => {
     });
   };
 
+  // Handle navigation after successful authentication
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate, from]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
+      console.log('Attempting login with:', { email: formData.email });
       await login(formData.email, formData.password);
       toast.success('Welcome back! Login successful.');
-      navigate(from, { replace: true });
     } catch (err: any) {
-      const errorMessage = err.message || 'Login failed. Please check your credentials.';
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please check your credentials.';
+      console.error('Login error:', errorMessage);
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

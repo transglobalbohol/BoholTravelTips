@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, ProtectedRoute } from './context/AuthContext';
 import { BookingProvider } from './context/BookingContext';
 import { initializePerformanceMonitoring, preloadComponent } from './utils/performance';
 import { lazyWithRetry } from './utils/performance';
@@ -37,11 +37,30 @@ const Register = lazyWithRetry(() => import('./pages/auth/Register'));
 const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword'));
 const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
 const Dashboard = lazyWithRetry(() => import('./pages/Dashboard'));
+const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
 const About = lazyWithRetry(() => import('./pages/About'));
 const Contact = lazyWithRetry(() => import('./pages/Contact'));
 
 // Import global styles
 import './index.css';
+
+// Layout wrapper component to handle conditional header/footer
+function AppLayout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  return (
+    <div className="App min-h-screen flex flex-col bg-gray-50">
+      {!isAdminRoute && <Header />}
+      
+      <main className={`flex-grow ${!isAdminRoute ? 'header-spacing' : ''}`} role="main">
+        {children}
+      </main>
+      
+      {!isAdminRoute && <Footer />}
+    </div>
+  );
+}
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -116,59 +135,66 @@ function App(): JSX.Element {
             delay={0}
           />
           
-          <div className="App min-h-screen flex flex-col bg-gray-50">
-            <Header />
-            
-            <main className="flex-grow header-spacing" role="main">
-              <Suspense fallback={<LoadingSpinner />}>
-                <Routes>
-                  {/* Public Routes - Ordered by likely access frequency */}
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/tours" element={<Tours />} />
-                  <Route path="/tours/:id" element={<TourDetails />} />
-                  <Route path="/hotels" element={<Hotels />} />
-                  <Route path="/hotels/:id" element={<HotelDetails />} />
-                  <Route path="/destinations" element={<Destinations />} />
-                  <Route path="/travel-guides/*" element={<TravelGuides />} />
-                  <Route path="/car-rentals" element={<CarRentals />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  
-                  {/* Auth Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password/:token" element={<ResetPassword />} />
-                  
-                  {/* Protected Routes */}
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/booking-confirmation/:id" element={<BookingConfirmation />} />
-                  
-                  {/* Performance: Optimized 404 Route */}
-                  <Route path="*" element={
-                    <div className="container py-16 text-center">
-                      <div className="max-w-md mx-auto">
-                        <div className="text-6xl mb-4">🏝️</div>
-                        <h1 className="text-heading-2 mb-4">404 - Page Not Found</h1>
-                        <p className="text-subheading mb-8">
-                          Looks like you've wandered off the beaten path in Bohol!
-                        </p>
-                        <a 
-                          href="/" 
-                          className="btn-primary inline-flex items-center gap-2"
-                        >
-                          <span>🏠</span>
-                          Return to Homepage
-                        </a>
-                      </div>
+          <AppLayout>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
+                {/* Public Routes - Ordered by likely access frequency */}
+                <Route path="/" element={<Homepage />} />
+                <Route path="/tours" element={<Tours />} />
+                <Route path="/tours/:id" element={<TourDetails />} />
+                <Route path="/hotels" element={<Hotels />} />
+                <Route path="/hotels/:id" element={<HotelDetails />} />
+                <Route path="/destinations" element={<Destinations />} />
+                <Route path="/travel-guides/*" element={<TravelGuides />} />
+                <Route path="/car-rentals" element={<CarRentals />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                
+                {/* Auth Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                
+                {/* Protected Routes */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                
+                {/* Admin Routes - All admin routes start with /admin */}
+                <Route path="/admin" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/*" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/booking-confirmation/:id" element={<BookingConfirmation />} />
+                
+                {/* Performance: Optimized 404 Route */}
+                <Route path="*" element={
+                  <div className="container py-16 text-center">
+                    <div className="max-w-md mx-auto">
+                      <div className="text-6xl mb-4">🏝️</div>
+                      <h1 className="text-heading-2 mb-4">404 - Page Not Found</h1>
+                      <p className="text-subheading mb-8">
+                        Looks like you've wandered off the beaten path in Bohol!
+                      </p>
+                      <a 
+                        href="/" 
+                        className="btn-primary inline-flex items-center gap-2"
+                      >
+                        <span>🏠</span>
+                        Return to Homepage
+                      </a>
                     </div>
-                  } />
-                </Routes>
-              </Suspense>
-            </main>
-            
-            <Footer />
-          </div>
+                  </div>
+                } />
+              </Routes>
+            </Suspense>
+          </AppLayout>
           
           {/* Floating scroll to top button */}
           <ScrollToTopButton />

@@ -45,19 +45,7 @@ const createOptimizedRateLimiter = (options) => {
     message: { success: false, message: options.message },
     standardHeaders: false,
     legacyHeaders: false,
-    
-    store: {
-      incr: (key, cb) => {
-        const current = rateLimitCache.get(key) || 0;
-        const newValue = current + 1;
-        rateLimitCache.set(key, newValue, Math.ceil(options.windowMs / 1000));
-        cb(null, newValue, new Date(Date.now() + options.windowMs));
-      },
-      resetKey: (key) => rateLimitCache.del(key)
-    },
-    
-    skip: (req) => req.user?.role === 'admin',
-    keyGenerator: (req) => req.ip
+    skip: (req) => req.user?.role === 'admin'
   });
 };
 
@@ -118,7 +106,16 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'X-Request-ID',
+    'X-CSRF-Token',
+    'X-Request-Timestamp',
+    'Cache-Control',
+    'Pragma'
+  ],
   maxAge: 86400
 };
 
