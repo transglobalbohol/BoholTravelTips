@@ -22,7 +22,7 @@ const initializeAdmin = async () => {
     const adminUser = new User({
       name: 'Administrator',
       email: adminEmail,
-      password: 'admin123',
+      password: 'Admin123!@#',
       role: 'admin',
       emailVerified: true,
       isActive: true,
@@ -33,7 +33,8 @@ const initializeAdmin = async () => {
     await adminUser.save();
     Logger.info('Admin user created successfully', { 
       email: adminEmail,
-      role: 'admin'
+      role: 'admin',
+      note: 'Default password: Admin123!@# (change after first login)'
     });
     
   } catch (error) {

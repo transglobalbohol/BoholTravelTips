@@ -18,6 +18,8 @@
     "build": "tsc && vite build && node scripts/generate-sitemap.js",
     "build:analyze": "pnpm run build && npx vite-bundle-analyzer dist",
     "preview": "vite preview --host",
+    "start": "npm run dev",
+    "serve": "npm run preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "type-check": "tsc --noEmit",
@@ -25,7 +27,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "node -e \"const fs=require('fs'); if(fs.existsSync('dist')) fs.rmSync('dist',{recursive:true})\"",
     "generate-sitemap": "node scripts/generate-sitemap.js",
-    "build:sitemap": "node scripts/generate-sitemap.js",
     "security-audit": "npm audit",
     "security-fix": "npm audit fix"
   },

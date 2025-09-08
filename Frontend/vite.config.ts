@@ -9,6 +9,27 @@ export default defineConfig({
     })
   ],
 
+  // Development server configuration
+  server: {
+    port: 5173,
+    host: true,
+    cors: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
+
+  // Preview server configuration
+  preview: {
+    port: 4173,
+    host: true,
+    cors: true
+  },
+
   build: {
     target: 'es2020',
     outDir: 'dist',
@@ -31,6 +52,14 @@ export default defineConfig({
           'forms-vendor': ['react-hook-form', 'yup'],
           'state-vendor': ['zustand', 'react-query']
         }
+      }
+    },
+
+    // Terser options for production builds
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
       }
     }
   },

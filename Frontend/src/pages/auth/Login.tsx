@@ -55,34 +55,38 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
-              B
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Bohol Travel Tips</h1>
-            </div>
-          </Link>
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link
-            to="/register"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            create a new account
-          </Link>
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative" style={{
+      backgroundImage: 'url(/images/boholLandingPage.webp)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center center',
+      backgroundRepeat: 'no-repeat'
+    }}>
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <div className="flex justify-center mb-6">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+                B
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Bohol Travel Tips</h1>
+              </div>
+            </Link>
+          </div>
+          <h2 className="text-center text-3xl font-extrabold text-gray-900 mb-6">
+            Sign in to your account
+          </h2>
+          <p className="text-center text-sm text-gray-600 mb-6">
+            Or{' '}
+            <Link
+              to="/register"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              create a new account
+            </Link>
+          </p>
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
               {error}

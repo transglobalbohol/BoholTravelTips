@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Mail, Phone, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
+import { MapPin, Mail, Phone, Facebook } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -24,15 +24,6 @@ const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a href="https://www.facebook.com/share/16e1meZ7pq/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="footer-link">
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="footer-link">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="footer-link">
-                <Youtube className="w-5 h-5" />
-              </a>
-              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="footer-link">
-                <Twitter className="w-5 h-5" />
               </a>
             </div>
           </div>

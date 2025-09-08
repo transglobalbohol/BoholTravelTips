@@ -1,4 +1,43 @@
 {
+  "name": "bohol-travel-tips",
+  "version": "1.0.0",
+  "description": "Ultimate guide to Bohol Philippines - Full Stack Travel Platform",
+  "private": true,
+  "workspaces": [
+    "Frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd Frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd Frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    
+    "start": "npm run dev",
+    "start:frontend": "cd Frontend && npm run dev",
+    "start:backend": "cd backend && npm run dev",
+    
+    "build": "cd Frontend && npm run build",
+    "preview": "cd Frontend && npm run preview",
+    
+    "clean": "cd Frontend && npm run clean",
+    "lint": "cd Frontend && npm run lint",
+    "lint:fix": "cd Frontend && npm run lint:fix",
+    "type-check": "cd Frontend && npm run type-check",
+    "format": "cd Frontend && npm run format",
+    
+    "security-audit": "npm audit && cd Frontend && npm audit && cd ../backend && npm audit",
+    "security-fix": "npm audit fix && cd Frontend && npm audit fix && cd ../backend && npm audit fix",
+    
+    "health-check": "curl http://localhost:5000/api/health || echo 'Backend not running'",
+    "status": "curl http://localhost:5000/api/status || echo 'Backend not running'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
   "dependencies": {
     "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
@@ -11,5 +50,25 @@
     "react-hook-form": "^7.62.0",
     "react-router-dom": "^7.8.0",
     "zod": "^4.0.15"
+  },
+  "keywords": [
+    "bohol",
+    "philippines", 
+    "travel",
+    "tourism",
+    "react",
+    "node.js",
+    "mongodb",
+    "full-stack"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/BoholTravelTips.git"
+  },
+  "author": "Bohol Travel Tips Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

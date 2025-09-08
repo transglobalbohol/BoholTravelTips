@@ -40,6 +40,7 @@ const Dashboard = lazyWithRetry(() => import('./pages/Dashboard'));
 const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
 const About = lazyWithRetry(() => import('./pages/About'));
 const Contact = lazyWithRetry(() => import('./pages/Contact'));
+const Privacy = lazyWithRetry(() => import('./pages/Privacy'));
 
 // Import global styles
 import './index.css';
@@ -149,6 +150,7 @@ function App(): JSX.Element {
                 <Route path="/car-rentals" element={<CarRentals />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy" element={<Privacy />} />
                 
                 {/* Auth Routes */}
                 <Route path="/login" element={<Login />} />
