@@ -94,11 +94,36 @@ app.use((req, res, next) => {
 
 app.disable('x-powered-by');
 app.set('etag', 'strong');
-app.set('trust proxy', true);
+app.set('trust proxy', process.env.NODE_ENV === 'production');
+
+// CORS must be applied before other middleware
+app.use(cors(corsOptions));
+
+// Add explicit OPTIONS handler for preflight requests
+app.options('*', cors(corsOptions));
+
+// CORS debugging middleware
+app.use((req, res, next) => {
+  console.log(`[CORS] ${req.method} ${req.path} - Origin: ${req.get('Origin') || 'none'}`);
+  
+  // Set CORS headers manually as fallback
+  res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, X-Response-Time, X-Cache');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Expose-Headers', 'X-Response-Time, X-Cache');
+  
+  if (req.method === 'OPTIONS') {
+    console.log('[CORS] Handling preflight request');
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 app.use(securityHeaders);
 app.use(securityMonitoring);
-app.use(cors(corsOptions));
 app.use(requestLogger);
 app.use(requestLimits);
 
@@ -128,6 +153,53 @@ app.use('/uploads', (req, res, next) => {
   next();
 }, express.static('uploads', { maxAge: '1d', etag: true }));
 
+// Serve frontend public images with absolute path resolution
+const path = require('path');
+const fs = require('fs');
+
+// Use multiple path resolution strategies
+const possiblePaths = [
+  path.resolve(__dirname, '../Frontend/public/images'),
+  path.resolve(__dirname, '../../Frontend/public/images'),
+  path.join(__dirname, '..', 'Frontend', 'public', 'images')
+];
+
+let frontendImagesPath = null;
+for (const testPath of possiblePaths) {
+  if (fs.existsSync(testPath)) {
+    frontendImagesPath = testPath;
+    console.log('✅ Images directory resolved:', frontendImagesPath);
+    break;
+  }
+}
+
+if (!frontendImagesPath) {
+  console.log('❌ Images directory not found. Attempted paths:');
+  possiblePaths.forEach(p => console.log('  -', p));
+  console.log('Current working directory:', process.cwd());
+  console.log('Script directory:', __dirname);
+} else {
+  const travelToursPath = path.join(frontendImagesPath, 'TravelAndTours');
+  if (fs.existsSync(travelToursPath)) {
+    const imageFiles = fs.readdirSync(travelToursPath);
+    console.log('📸 Available tour images:', imageFiles.join(', '));
+  }
+  
+  app.use('/images', express.static(frontendImagesPath, {
+    maxAge: '1d',
+    etag: true,
+    dotfiles: 'deny',
+    index: false,
+    setHeaders: (res, filePath) => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      console.log('🖼️ Serving:', path.relative(frontendImagesPath, filePath));
+    }
+  }));
+}
+
 const { connectDB, checkConnection, getCacheStats } = require('./config/database');
 const { initializeAdmin } = require('./scripts/initAdmin');
 
@@ -151,7 +223,57 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/security', securityRoutes);
 
-// Simple API status check
+// Direct image serving endpoint as fallback
+app.get('/images/TravelAndTours/:filename', (req, res) => {
+  const path = require('path');
+  const fs = require('fs');
+  
+  const filename = req.params.filename;
+  const possiblePaths = [
+    path.resolve(__dirname, '../Frontend/public/images/TravelAndTours', filename),
+    path.resolve(__dirname, '../../Frontend/public/images/TravelAndTours', filename)
+  ];
+  
+  for (const filePath of possiblePaths) {
+    if (fs.existsSync(filePath)) {
+      console.log('Direct serving:', filename, 'from', filePath);
+      res.setHeader('Content-Type', `image/${path.extname(filename).slice(1)}`);
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      return res.sendFile(filePath);
+    }
+  }
+  
+  console.log('Image not found:', filename);
+  res.status(404).json({ error: 'Image not found' });
+});
+app.get('/api/images/test', (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  
+  const frontendImagesPath = path.resolve(__dirname, '../Frontend/public/images');
+  const travelToursPath = path.join(frontendImagesPath, 'TravelAndTours');
+  
+  const testResults = {
+    imagesPathExists: fs.existsSync(frontendImagesPath),
+    travelToursPathExists: fs.existsSync(travelToursPath),
+    availableImages: [],
+    sampleImagePath: null
+  };
+  
+  if (fs.existsSync(travelToursPath)) {
+    testResults.availableImages = fs.readdirSync(travelToursPath);
+    if (testResults.availableImages.length > 0) {
+      testResults.sampleImagePath = `/images/TravelAndTours/${testResults.availableImages[0]}`;
+    }
+  }
+  
+  res.json({
+    success: true,
+    data: testResults,
+    timestamp: new Date().toISOString()
+  });
+});
 app.get('/api/status', (req, res) => {
   const dbStatus = checkConnection();
   res.json({

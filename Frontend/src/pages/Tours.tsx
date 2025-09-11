@@ -4,6 +4,89 @@ import { Tour, SearchFilters } from '../types';
 import { Star, Clock, Users, MapPin, Filter } from 'lucide-react';
 import { tourService } from '../services/tourService';
 
+const getLocalTourImages = (tourId: string): string[] => {
+  switch(tourId) {
+    case '1':
+      return [
+        '/images/TravelAndTours/Dauis_Church.jpg',
+        '/images/TravelAndTours/Baclayon.jpg', 
+        '/images/TravelAndTours/Loboc_River.png',
+        '/images/TravelAndTours/Tarsier.png',
+        '/images/TravelAndTours/Man_Made_Forest.jpg',
+        '/images/TravelAndTours/Chocolate_Hills.png'
+      ];
+
+    case '2':
+      return [
+        '/images/TravelAndTours/Whale_Shark_Encounter.jpg',
+        '/images/TravelAndTours/Chocolate_Hills.png'
+      ];
+
+    case '3':
+      return [
+        '/images/TravelAndTours/Dolphin_Playground.jpg',
+        '/images/TravelAndTours/Balicasag.jpg'
+      ];
+
+    case '4':
+      return [
+        '/images/TravelAndTours/Alicia_Panoramic_Park.jpg',
+        '/images/TravelAndTours/Chocolate_Hills.png'
+      ];
+
+    case '5':
+      return [
+        '/images/TravelAndTours/Can_Umantad_Falls.jpg',
+        '/images/TravelAndTours/Cadapdapan_Rice_Terraces.jpg',
+        '/images/TravelAndTours/Quinale_Beach.jpg'
+      ];
+
+    case '6':
+      return [
+        '/images/TravelAndTours/Tarsier.png',
+        '/images/TravelAndTours/Loboc_River.png',
+        '/images/TravelAndTours/Loboc_Church.jpg'
+      ];
+
+    case '7':
+      return [
+        '/images/TravelAndTours/Tarsier.png',
+        '/images/TravelAndTours/Lasang_Farm_Cacao_Talk.jpg',
+        '/images/TravelAndTours/Forest_Trail_Hiking.jpg',
+        '/images/TravelAndTours/Tree_Rope_Climbing.jpg'
+      ];
+
+    default:
+      return ['/images/boholLandingPage.webp'];
+  }
+};
+
+const getTourDisplayName = (tourId: string): string => {
+  const idMapping: { [key: string]: string } = {
+    '1': 'Tour 1',
+    '2': 'Tour 2',
+    '3': 'Tour 3',
+    '4': 'Tour 4',
+    '5': 'Tour 5',
+    '6': 'Tour 6',
+    '7': 'Tour 7'
+  };
+
+  return idMapping[tourId] || `Tour ${tourId}`;
+};
+
+const sortToursByNumber = (tours: Tour[]): Tour[] => {
+  return [...tours].sort((a, b) => {
+    const displayNameA = getTourDisplayName(a._id || '');
+    const displayNameB = getTourDisplayName(b._id || '');
+    
+    const numberA = parseInt(displayNameA.replace('Tour ', '')) || 999;
+    const numberB = parseInt(displayNameB.replace('Tour ', '')) || 999;
+    
+    return numberA - numberB;
+  });
+};
+
 const Tours: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tours, setTours] = useState<Tour[]>([]);
@@ -14,6 +97,8 @@ const Tours: React.FC = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [hoveredTour, setHoveredTour] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({});
 
   const [filters, setFilters] = useState<SearchFilters>({
     destination: searchParams.get('destination') || '',
@@ -28,6 +113,36 @@ const Tours: React.FC = () => {
   });
 
   useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (hoveredTour) {
+      const tourImages = getLocalTourImages(hoveredTour);
+      if (tourImages.length > 1) {
+        interval = setInterval(() => {
+          setCurrentImageIndex(prev => ({
+            ...prev,
+            [hoveredTour]: ((prev[hoveredTour] || 0) + 1) % tourImages.length
+          }));
+        }, 1000);
+      }
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [hoveredTour]);
+
+  const handleTourHover = (tourId: string) => {
+    setHoveredTour(tourId);
+    setCurrentImageIndex(prev => ({ ...prev, [tourId]: 0 }));
+  };
+
+  const handleTourLeave = (tourId: string) => {
+    setHoveredTour(null);
+    setCurrentImageIndex(prev => ({ ...prev, [tourId]: 0 }));
+  };
+
+  useEffect(() => {
     fetchInitialData();
   }, []);
 
@@ -38,14 +153,16 @@ const Tours: React.FC = () => {
   const fetchInitialData = async () => {
     try {
       const [categoriesResponse, destinationsResponse] = await Promise.all([
-        tourService.getCategories(),
-        tourService.getDestinations()
+        tourService.getCategories().catch(() => ({ data: [] })),
+        tourService.getDestinations().catch(() => ({ data: [] }))
       ]);
       
-      setCategories(categoriesResponse.data);
-      setDestinations(destinationsResponse.data);
+      setCategories(Array.isArray(categoriesResponse.data) ? categoriesResponse.data : []);
+      setDestinations(Array.isArray(destinationsResponse.data) ? destinationsResponse.data : []);
     } catch (err) {
       console.error('Error fetching initial data:', err);
+      setCategories([]);
+      setDestinations([]);
     }
   };
 
@@ -148,13 +265,19 @@ const Tours: React.FC = () => {
 
   const categoryOptions = [
     { name: 'All Categories', value: '' },
-    ...categories.map(cat => ({ name: cat.name, value: cat.name }))
+    ...(Array.isArray(categories) ? categories.map(cat => ({ name: cat.name, value: cat.name })) : [])
   ];
 
   const destinationOptions = [
     { name: 'All Destinations', value: '' },
-    ...destinations.map(dest => ({ name: dest.name, value: dest.name }))
+    ...(Array.isArray(destinations) ? destinations.map(dest => ({ name: dest.name, value: dest.name })) : [])
   ];
+
+  const getTourImage = (tourId: string): string => {
+    const tourImages = getLocalTourImages(tourId);
+    const imageIndex = currentImageIndex[tourId] || 0;
+    return tourImages[imageIndex] || tourImages[0];
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -332,91 +455,107 @@ const Tours: React.FC = () => {
 
             {!loading && tours.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {tours.map((tour) => (
-                  <Link
-                    key={tour._id}
-                    to={`/tours/${tour._id}`}
-                    className="card-interactive overflow-hidden"
-                  >
-                    <div className="relative">
-                      <img
-                        src={tour.images[0]}
-                        alt={tour.title}
-                        className="w-full h-48 object-cover"
-                        loading="lazy"
-                      />
-                      {tour.isFeatured && (
-                        <div className="absolute top-3 left-3 badge badge-primary">
-                          Featured
-                        </div>
-                      )}
-                      {tour.originalPrice && (
-                        <div className="absolute top-3 right-3 badge badge-error">
-                          -{Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)}%
-                        </div>
-                      )}
-                    </div>
+                {sortToursByNumber(tours).map((tour) => {
+                  if (!tour || !tour._id) return null;
+                  
+                  const categoryDisplay = typeof tour.category === 'string' 
+                    ? tour.category 
+                    : (tour.category && tour.category.name ? tour.category.name : 'Tour');
                     
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="badge text-xs">{tour.category}</span>
-                        <div className="flex items-center space-x-1 text-small text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          <span>{tour.duration}</span>
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-heading-3 text-lg mb-2 line-clamp-2">
-                        {tour.title}
-                      </h3>
-                      
-                      <div className="flex items-center space-x-1 mb-3">
-                        <MapPin className="w-4 h-4 text-gray-400" />
-                        <span className="text-small text-gray-500">{tour.location}</span>
-                      </div>
-                      
-                      <p className="text-body text-sm mb-4 line-clamp-2">
-                        {tour.shortDescription}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-1">
-                          <div className="flex space-x-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-4 h-4 ${
-                                  i < Math.floor(tour.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
+                  return (
+                    <Link
+                      key={tour._id}
+                      to={`/tours/${tour._id}`}
+                      className="card-interactive overflow-hidden"
+                      onMouseEnter={() => handleTourHover(tour._id)}
+                      onMouseLeave={() => handleTourLeave(tour._id)}
+                    >
+                      <div className="relative">
+                        <img
+                          src={getTourImage(tour._id)}
+                          alt={`${getTourDisplayName(tour._id)} image`}
+                          className="w-full h-48 object-cover transition-all duration-300"
+                          loading="lazy"
+                          onError={(e) => {
+                            const fallbackImage = '/images/boholLandingPage.webp';
+                            if (e.currentTarget.src !== window.location.origin + fallbackImage) {
+                              e.currentTarget.src = fallbackImage;
+                            }
+                          }}
+                        />
+                        {tour.isFeatured && (
+                          <div className="absolute top-3 left-3 badge badge-primary">
+                            Featured
                           </div>
-                          <span className="text-small text-gray-600">
-                            {tour.rating} ({tour.reviewCount})
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1 text-small text-gray-500">
-                          <Users className="w-3 h-3" />
-                          <span>Max {tour.maxGroupSize}</span>
-                        </div>
+                        )}
+                        {tour.originalPrice && tour.price && (
+                          <div className="absolute top-3 right-3 badge badge-error">
+                            -{Math.round(((tour.originalPrice - tour.price) / tour.originalPrice) * 100)}%
+                          </div>
+                        )}
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-baseline space-x-2">
-                          {tour.originalPrice && (
-                            <span className="text-small text-gray-500 line-through">
-                              ₱{tour.originalPrice.toLocaleString()}
-                            </span>
-                          )}
-                          <span className="text-xl font-bold text-gray-900">
-                            ₱{tour.price.toLocaleString()}
-                          </span>
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="badge text-xs">{categoryDisplay}</span>
+                          <div className="flex items-center space-x-1 text-small text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            <span>{tour.duration || 'N/A'}</span>
+                          </div>
                         </div>
-                        <span className="text-small text-gray-500">per person</span>
+                        
+                        <h3 className="text-heading-3 text-lg mb-2 line-clamp-2">
+                          {getTourDisplayName(tour._id)}
+                        </h3>
+                        
+                        <div className="flex items-center space-x-1 mb-3">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span className="text-small text-gray-500">{tour.location || 'Location TBA'}</span>
+                        </div>
+                        
+                        <p className="text-body text-sm mb-4 line-clamp-2">
+                          {tour.shortDescription || tour.description || 'No description available'}
+                        </p>
+                        
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-1">
+                            <div className="flex space-x-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < Math.floor(tour.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-small text-gray-600">
+                              {tour.rating || 0} ({tour.reviewCount || 0})
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1 text-small text-gray-500">
+                            <Users className="w-3 h-3" />
+                            <span>Max {tour.maxGroupSize || 'TBA'}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-baseline space-x-2">
+                            {tour.originalPrice && (
+                              <span className="text-small text-gray-500 line-through">
+                                ₱{tour.originalPrice.toLocaleString()}
+                              </span>
+                            )}
+                            <span className="text-xl font-bold text-gray-900">
+                              ₱{(tour.price || 0).toLocaleString()}
+                            </span>
+                          </div>
+                          <span className="text-small text-gray-500">per person</span>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             )}
 

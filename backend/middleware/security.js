@@ -45,6 +45,12 @@ const createOptimizedRateLimiter = (options) => {
     message: { success: false, message: options.message },
     standardHeaders: false,
     legacyHeaders: false,
+    trustProxy: process.env.NODE_ENV === 'production',
+    keyGenerator: (req) => {
+      const forwarded = req.get('X-Forwarded-For');
+      const ip = req.ip || req.connection.remoteAddress;
+      return process.env.NODE_ENV === 'production' && forwarded ? forwarded.split(',')[0].trim() : ip;
+    },
     skip: (req) => req.user?.role === 'admin'
   });
 };
@@ -98,10 +104,14 @@ const corsOptions = {
       process.env.CLIENT_URL
     ].filter(Boolean);
 
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('CORS not allowed'));
+      console.warn('CORS blocked origin:', origin);
+      callback(new Error('CORS not allowed'), false);
     }
   },
   credentials: true,
@@ -116,7 +126,10 @@ const corsOptions = {
     'Cache-Control',
     'Pragma'
   ],
-  maxAge: 86400
+  exposedHeaders: ['X-Response-Time', 'X-Cache'],
+  maxAge: 86400,
+  preflightContinue: false,
+  optionsSuccessStatus: 200
 };
 
 const securityMonitoring = (req, res, next) => {
