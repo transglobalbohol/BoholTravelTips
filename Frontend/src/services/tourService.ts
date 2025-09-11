@@ -109,14 +109,24 @@ export const tourService = {
 
   // Get tour categories
   getCategories: async (): Promise<ApiResponse<Array<{ _id: string; name: string; slug: string; count: number }>>> => {
-    const response = await apiClient.get('/tours/categories');
-    return response.data;
+    try {
+      const response = await apiClient.get('/tours/categories');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return { success: false, data: [], message: 'Failed to fetch categories' };
+    }
   },
 
   // Get tour destinations
   getDestinations: async (): Promise<ApiResponse<Array<{ name: string; slug: string; count: number }>>> => {
-    const response = await apiClient.get('/tours/destinations');
-    return response.data;
+    try {
+      const response = await apiClient.get('/tours/destinations');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching destinations:', error);
+      return { success: false, data: [], message: 'Failed to fetch destinations' };
+    }
   },
 
   // Get tour availability
